@@ -1,281 +1,106 @@
-'use client';
+"use client"; // 이 페이지에서 상태(입력창)를 사용하겠다고 선언하는 필수 코드
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
+import { createClient } from '@supabase/supabase-js';
 
-export default function LandingPage() {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [formData, setFormData] = useState({ name: '', phone: '', symptom: '' });
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [showCTA, setShowCTA] = useState(false);
+// 1. Supabase 연결 세팅 (env 파일에서 아까 넣은 주소와 열쇠를 가져옵니다)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const observerRef = useRef<HTMLDivElement>(null);
-    const [isVisible, setIsVisible] = useState(false);
+export default function MobileMain() {
+    // 2. 입력창 데이터 저장소 (이름, 폰번호, 증상)
+    const [name, setName] = useState('');
+    const [phone, setPhone] = useState('');
+    const [memo, setMemo] = useState('');
 
-    const heroObserverRef = useRef<HTMLDivElement>(null);
-    const [isHeroVisible, setIsHeroVisible] = useState(false);
+    // 3. 상담 신청하기 버튼을 눌렀을 때 실행될 함수
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault(); // 새로고침 방지
 
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    setIsHeroVisible(true);
-                    if (heroObserverRef.current) observer.unobserve(heroObserverRef.current);
-                }
-            },
-            { threshold: 0.2 }
-        );
-        if (heroObserverRef.current) observer.observe(heroObserverRef.current);
-        return () => observer.disconnect();
-    }, []);
-
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    setIsVisible(true);
-                    if (observerRef.current) {
-                        observer.unobserve(observerRef.current);
-                    }
-                }
-            },
-            { threshold: 0.2 }
-        );
-
-        if (observerRef.current) {
-            observer.observe(observerRef.current);
+        if (!name || !phone) {
+            alert('이름과 연락처를 꼭 입력해주세요!');
+            return;
         }
 
-        return () => observer.disconnect();
-    }, []);
-
-    const images = ['/images/doctor.jpg', '/images/doctor2.jpg'];
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentImageIndex((prev) => (prev + 1) % images.length);
-        }, 5000); // 5초마다 타이머 작동
-        return () => clearInterval(interval);
-    }, []);
-
-    // 스크롤 이벤트 (스크롤을 조금 내렸을 때 CTA 노출)
-    useEffect(() => {
-        const handleScroll = () => {
-            if (window.scrollY > 200) {
-                setShowCTA(true);
-            } else {
-                setShowCTA(false);
-            }
-        };
-
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
-    // 폼 제출 핸들러 (이후 Supabase Insert 로직 연결)
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        /*
-          TODO: Supabase DB 연동 예시
-          const { data, error } = await supabase
+        // Supabase 'consultations' 테이블에 데이터 밀어넣기
+        const { error } = await supabase
             .from('consultations')
-            .insert([{ 
-              patient_name: formData.name, 
-              phone_number: formData.phone, 
-              symptom_area: formData.symptom 
-            }]);
-        */
-        console.log('수집된 환자 DB:', formData);
-        alert('상담 신청이 완료되었습니다. 곧 연락드리겠습니다.');
-        setIsModalOpen(false);
-        setFormData({ name: '', phone: '', symptom: '' }); // 폼 초기화
+            .insert([{ patient_name: name, phone: phone, memo: memo }]);
+
+        if (error) {
+            alert('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+            console.error(error);
+        } else {
+            alert('상담 신청이 완료되었습니다! 빠른 시일 내에 연락드리겠습니다.');
+            // 전송 성공 후 입력창 싹 비우기
+            setName('');
+            setPhone('');
+            setMemo('');
+        }
     };
 
     return (
-        <div className="relative min-h-screen bg-gray-900 font-sans flex justify-center">
-            {/* Mobile Container */}
-            <div className="w-full max-w-[375px] bg-white relative pb-32 shadow-2xl overflow-hidden min-h-screen">
-                {/* 1. 메인 히어로 공간 (100dvh 높이 적용) */}
-                <div className="relative w-full h-[100dvh] bg-gray-900 overflow-hidden font-sans">
-                    {/* 1-1. 배경 이미지 슬라이더 (Ken Burns effect & Crossfade) */}
-                    {images.map((img, idx) => (
-                        <div
-                            key={idx}
-                            className={`absolute inset-0 z-0 transition-opacity duration-[2000ms] ease-in-out ${idx === currentImageIndex ? 'opacity-100' : 'opacity-0'
-                                }`}
-                        >
-                            <div
-                                className="absolute inset-0 bg-cover bg-center"
-                                style={{ backgroundImage: `url(${img})` }}
-                            ></div>
-                        </div>
-                    ))}
-                    {/* 텍스트 가독성을 위해 전체 배경을 살짝 어둡게 누름 */}
-                    <div className="absolute inset-0 bg-black/65 z-0 pointer-events-none"></div>
+        // 전체 배경을 부드러운 회색으로 깔고 모바일 사이즈로 고정
+        <div className="w-full max-w-md mx-auto bg-gray-50 font-sans min-h-screen pb-12">
 
-                    {/* 1-2. 콘텐츠 영역 */}
-                    <div className="relative z-10 flex flex-col justify-end h-full px-6 pb-20">
-
-                        {/* 상단: 로고 (텍스트 그룹과 분리하여 상단 중앙에 2배 크기로 배치) */}
-                        <div className="absolute top-12 left-0 w-full flex justify-center">
-                            <img
-                                src="/images/logo-white.png"
-                                alt="연세척병원 로고"
-                                className="h-24 object-contain w-auto drop-shadow-md"
-                            />
-                        </div>
-
-                        {/* 하단: 메인 카피 텍스트 블록 (사진 하단으로 배치) */}
-                        <div
-                            ref={heroObserverRef}
-                            className={`text-left mb-6 transition-all duration-1000 ease-out transform delay-300 ${isHeroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-                        >
-                            <p className="text-yellow-400 font-extrabold text-[20px] mb-2 drop-shadow-md font-pretendard tracking-[-0.01em]">
-                                해외 의사도 배우러 오는 곳
-                            </p>
-                            <h1 className="text-white text-[26.5px] font-extrabold leading-snug drop-shadow-lg font-pretendard tracking-[-0.01em] whitespace-nowrap">
-                                해외에서 인정받는<br />
-                                양방향 척추내시경 연세척병원
-                            </h1>
-                        </div>
-
-                        {/* 하단: 액션 버튼 2개 (네이버 예약, 의료진 바로보기 세로 배치) */}
-                        <div className="flex flex-col gap-3">
-                            {/* 네이버 예약 버튼 (초록색, 풀 너비) */}
-                            <Link
-                                href="#"
-                                className="w-full bg-[#00c73c] hover:bg-[#00ab33] text-white text-center py-4 rounded-2xl font-bold text-[18px] shadow-lg transition-colors flex items-center justify-center gap-2 cursor-pointer"
-                            >
-                                <span className="font-extrabold text-[20px]">N</span> 네이버 예약
-                            </Link>
-
-                            {/* 의료진 바로보기 버튼 (밝은 회색, 네이버 예약과 동일한 크기) */}
-                            <Link
-                                href="#"
-                                className="w-full bg-[#EAEAEA] hover:bg-gray-200 text-[#0d6efd] text-center py-4 rounded-2xl font-bold text-[18px] shadow-lg transition-colors cursor-pointer"
-                            >
-                                의료진 바로보기
-                            </Link>
-                        </div>
-                    </div>
+            {/* --- 첫 번째 섹션: 기존 메인 히어로 (수술실 배경) --- */}
+            <div className="relative w-full h-[100dvh] bg-gray-900 overflow-hidden flex flex-col justify-between p-6 shadow-xl z-10">
+                <div className="absolute inset-0 z-0" style={{ backgroundImage: 'url("/images/bg-surgery.jpg")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+                    <div className="absolute inset-0 bg-black/65"></div>
                 </div>
 
-
-                {/* 2. 유튜브 환자 후기 Section */}
-                <section className="w-full bg-white py-16 px-5">
-                    <div
-                        ref={observerRef}
-                        className={`flex flex-col gap-6 text-center font-sans transition-all duration-1000 ease-out transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                            }`}
-                    >
-                        <h2 className="text-[32px] font-bold leading-[1.35] tracking-[-0.02em] text-black">
-                            실제 환자분들이<br />
-                            증명하는 결과
-                        </h2>
-                        <p className="text-base font-semibold leading-[1.4] tracking-[-0.02em] text-[#727582]">
-                            왜 연세척병원을 선택하고<br />
-                            주변에 자신있게 추천하는지 직접 확인해보세요
-                        </p>
+                <div className="relative z-10 flex flex-col h-full justify-between">
+                    <div className="mt-8">
+                        <img src="/images/logo.png" alt="연세척병원 로고" className="h-12 object-contain bg-white/90 px-3 py-1.5 rounded-lg shadow-sm" />
                     </div>
 
-                    {/* 유튜브 영상 임베드 */}
-                    <div className="mt-8 rounded-3xl overflow-hidden shadow-lg border border-gray-100 bg-gray-100 relative aspect-video">
-                        <iframe
-                            className="absolute top-0 left-0 w-full h-full"
-                            src="https://www.youtube.com/embed/50dNBoWAS4Y"
-                            title="유튜브 환자 후기 영상"
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerPolicy="strict-origin-when-cross-origin"
-                            allowFullScreen
-                        ></iframe>
+                    <div className="mb-auto mt-24">
+                        <p className="text-yellow-400 font-semibold text-sm md:text-base mb-3 tracking-wide drop-shadow-md">해외의사들도 배우러 오는 곳</p>
+                        <h1 className="text-white text-3xl md:text-4xl font-extrabold leading-snug drop-shadow-lg break-keep">
+                            양방향척추내시경<br />연세척병원
+                        </h1>
                     </div>
-                </section>
 
-                {/* 3. 하단 고정 CTA 버튼 (Sticky) - 스크롤 다운 시 나타남 */}
-                <div
-                    className={`fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[375px] bg-white border-t border-gray-200 py-4 px-6 z-40 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] transition-transform duration-500 ease-in-out ${showCTA ? 'translate-y-0' : 'translate-y-full'
-                        }`}
-                >
-                    <button
-                        onClick={() => setIsModalOpen(true)}
-                        className="w-full mx-auto block bg-blue-600 text-white font-bold text-lg py-4 rounded-xl hover:bg-blue-700 transition duration-300"
-                    >
-                        빠른 전화 상담하기
-                    </button>
+                    <div className="flex flex-col gap-3 pb-6">
+                        <Link href="https://map.naver.com/p/search/%EC%97%B0%EC%84%B8%EC%B2%99%EB%B3%91%EC%9B%90/place/35643868?placePath=/home?bk_query=%EC%97%B0%EC%84%B8%EC%B2%99%EB%B3%91%EC%9B%90&entry=pll&from=nx&fromNxList=true&from=map&fromPanelNum=2&timestamp=202603061509&locale=ko&svcName=map_pcv5&searchText=%EC%97%B0%EC%84%B8%EC%B2%99%EB%B3%91%EC%9B%90&entry=pll&from=nx&fromNxList=true&searchType=place&c=15.00,0,0,0,dh" target="_blank" className="w-full bg-[#03c75a] hover:bg-[#02b350] text-white text-center py-4 rounded-xl font-bold text-lg shadow-lg transition-colors flex items-center justify-center gap-2">
+                            <span className="font-black">N</span> 네이버 예약
+                        </Link>
+                        <Link href="https://www.ys-cheok.com/001/004_4.php#doctorProfile" target="_blank" className="w-full bg-gray-100 hover:bg-gray-200 text-blue-600 text-center py-4 rounded-xl font-bold text-lg shadow-lg transition-colors">
+                            의료진 바로보기
+                        </Link>
+                    </div>
                 </div>
-
-                {/* 4. 개인정보 입력 폼 모달 */}
-                {isModalOpen && (
-                    <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-end md:items-center z-50 transition-opacity">
-                        <div className="bg-white rounded-t-2xl md:rounded-2xl w-full max-w-md p-6 relative animate-slide-up md:animate-none">
-                            <button
-                                onClick={() => setIsModalOpen(false)}
-                                className="absolute top-5 right-5 text-gray-400 hover:text-gray-600 text-xl font-bold"
-                            >
-                                ✕
-                            </button>
-                            <h2 className="text-2xl font-bold mb-6 text-gray-800">1:1 맞춤 상담 신청</h2>
-
-                            <form onSubmit={handleSubmit} className="space-y-5">
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-1">성함</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        placeholder="홍길동"
-                                        className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition"
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-1">연락처 (- 없이 숫자만)</label>
-                                    <input
-                                        type="tel"
-                                        required
-                                        pattern="[0-9]*"
-                                        placeholder="01012345678"
-                                        className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition"
-                                        value={formData.phone}
-                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/[^0-9]/g, '') })}
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-1">상담 희망 부위</label>
-                                    <select
-                                        required
-                                        className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition bg-white"
-                                        value={formData.symptom}
-                                        onChange={(e) => setFormData({ ...formData, symptom: e.target.value })}
-                                    >
-                                        <option value="" disabled>가장 불편하신 부위를 선택해주세요</option>
-                                        <option value="목">목</option>
-                                        <option value="허리">허리</option>
-                                        <option value="엉치">엉치</option>
-                                        <option value="무릎">무릎</option>
-                                        <option value="어깨">어깨</option>
-                                    </select>
-                                </div>
-
-                                <div className="pt-2">
-                                    <button
-                                        type="submit"
-                                        className="w-full bg-blue-600 text-white font-bold text-lg py-4 rounded-xl hover:bg-blue-700 transition duration-300"
-                                    >
-                                        무료 상담 신청 완료하기
-                                    </button>
-                                </div>
-                                <p className="text-xs text-center text-gray-400 mt-2">
-                                    신청 시 개인정보 수집 및 이용에 동의하는 것으로 간주합니다.
-                                </p>
-                            </form>
-                        </div>
-                    </div>
-                )}
             </div>
+
+            {/* --- 두 번째 섹션: 상담 신청 폼 (스크롤해서 내려오면 보임) --- */}
+            <div className="p-8 bg-white mt-4 rounded-t-3xl shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] relative z-20">
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">빠른 상담 신청</h2>
+                <p className="text-gray-500 text-sm mb-6">아픈 곳을 남겨주시면 전문 상담원이 빠르게 연락드립니다.</p>
+
+                <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">환자 성함 <span className="text-red-500">*</span></label>
+                        <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="홍길동" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50" />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">연락처 <span className="text-red-500">*</span></label>
+                        <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="010-1234-5678" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50" />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">증상 및 문의내용</label>
+                        <textarea value={memo} onChange={(e) => setMemo(e.target.value)} placeholder="예) 허리가 너무 아파요, 양방향내시경 비용이 궁금해요." rows={3} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 resize-none"></textarea>
+                    </div>
+
+                    <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl mt-2 shadow-lg transition-colors">
+                        상담 신청하기
+                    </button>
+                </form>
+            </div>
+
         </div>
     );
 }
