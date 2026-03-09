@@ -62,6 +62,17 @@ export default function MobileMain() {
             alert('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
             console.error(error);
         } else {
+            // 슬랙 알림 라우트 호출
+            try {
+                fetch('/api/slack', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, phone, memo }),
+                });
+            } catch (slackError) {
+                console.error('슬랙 알림 에러:', slackError);
+            }
+
             alert('상담 신청이 완료되었습니다! 빠른 시일 내에 연락드리겠습니다.');
             // 전송 성공 후 입력창 및 팝업 닫기
             setName('');
