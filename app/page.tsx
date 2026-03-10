@@ -21,6 +21,9 @@ export default function MobileMain() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [showBottomNav, setShowBottomNav] = useState(false);
 
+    // 동적 슬라이드 이미지 개수 상태 (기본 4개)
+    const [slideCount, setSlideCount] = useState(4);
+
     useEffect(() => {
         setIsLoaded(true);
         const imageInterval = setInterval(() => {
@@ -37,6 +40,23 @@ export default function MobileMain() {
         window.addEventListener('scroll', scrollHandler);
         // 초기 렌더링 시에도 체크
         scrollHandler();
+
+        // 슬라이드 개수 가져오기
+        const fetchSlideCount = async () => {
+            try {
+                const res = await fetch('/api/slides');
+                if (res.ok) {
+                    const data = await res.json();
+                    // 최소 1장 이상일 때만 업데이트
+                    if (data.count > 0) {
+                        setSlideCount(data.count);
+                    }
+                }
+            } catch (err) {
+                console.error('슬라이드 개수 불러오기 실패:', err);
+            }
+        };
+        fetchSlideCount();
 
         return () => {
             clearInterval(imageInterval);
@@ -132,6 +152,61 @@ export default function MobileMain() {
                     </div>
                     <div className="mt-8 rounded-3xl overflow-hidden shadow-lg border border-gray-100 bg-gray-100 relative aspect-video">
                         <iframe className="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/50dNBoWAS4Y" title="유튜브 환자 후기 영상" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
+                    </div>
+                </section>
+
+                {/* --- 세 번째 섹션: 연세척병원이 특별한 이유 --- */}
+                <section className="w-full bg-[#f8f9fa] py-16 px-5 relative z-10">
+                    <div className="flex flex-col gap-4 text-center font-sans mb-10">
+                        <div className="flex justify-center mb-1">
+                            <img src="/images/logo.png" alt="연세척병원 로고" className="h-7 object-contain opacity-80" />
+                        </div>
+                        <h2 className="text-[32px] font-bold leading-[1.35] tracking-[-0.02em] text-black">
+                            연세척병원이<br />특별한 이유
+                        </h2>
+                    </div>
+
+                    <div className="bg-white rounded-[32px] pt-10 pb-12 shadow-[0_10px_40px_rgba(0,0,0,0.06)] border border-gray-100">
+                        <div className="text-center mb-8 px-6">
+                            <span className="text-blue-600 text-4xl font-extrabold block mb-3 font-pretendard">1</span>
+                            <h3 className="text-[22px] font-bold leading-[1.4] tracking-[-0.02em] text-black">
+                                신경외과 의사를 가르치는<br />신경외과 전문의
+                            </h3>
+                        </div>
+
+                        {/* 가로 스크롤 슬라이더 (자동 롤링 애니메이션 추가) */}
+                        <div className="relative w-full overflow-hidden flex" style={{ maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)' }}>
+                            <style dangerouslySetInnerHTML={{
+                                __html: `
+                                @keyframes slide {
+                                    0% { transform: translateX(0); }
+                                    100% { transform: translateX(calc(-240px * ${slideCount} - 16px * ${slideCount})); }
+                                }
+                                .animate-slide {
+                                    animation: slide ${slideCount * 4}s linear infinite;
+                                }
+                            `}} />
+                            <div className="flex gap-4 animate-slide shrink-0">
+                                {/* 첫 번째 세트 */}
+                                {Array.from({ length: slideCount }, (_, i) => i + 1).map((num) => (
+                                    <div key={`set1-${num}`} className="w-[240px] shrink-0 border border-gray-100 rounded-2xl overflow-hidden bg-white shadow-sm flex flex-col">
+                                        <div className="w-full aspect-[4/5] relative">
+                                            <img src={`/images/slide${num}.jpg`} alt={`교육 및 세미나 모습 ${num}`} className="absolute inset-0 w-full h-full object-cover" />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="flex gap-4 animate-slide shrink-0 ml-4">
+                                {/* 두 번째 세트 (무한 루프 끊김 방지용 복제본) */}
+                                {Array.from({ length: slideCount }, (_, i) => i + 1).map((num) => (
+                                    <div key={`set2-${num}`} className="w-[240px] shrink-0 border border-gray-100 rounded-2xl overflow-hidden bg-white shadow-sm flex flex-col">
+                                        <div className="w-full aspect-[4/5] relative">
+                                            <img src={`/images/slide${num}.jpg`} alt={`교육 및 세미나 모습 ${num}`} className="absolute inset-0 w-full h-full object-cover" />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </section>
 
