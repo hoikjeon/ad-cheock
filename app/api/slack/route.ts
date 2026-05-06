@@ -11,6 +11,16 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Slack webhook URL not configured' }, { status: 500 });
         }
 
+        const kstTime = new Intl.DateTimeFormat('ko-KR', {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+        }).format(new Date());
+
         const slackMessage = {
             text: "🔔 *새로운 빠른 상담 신청이 접수되었습니다!*",
             blocks: [
@@ -37,10 +47,16 @@ export async function POST(request: Request) {
                 },
                 {
                     type: "section",
-                    text: {
-                        type: "mrkdwn",
-                        text: `*증상 및 문의내용:*\n${memo || "없음"}`
-                    }
+                    fields: [
+                        {
+                            type: "mrkdwn",
+                            text: `*증상 및 문의내용:*\n${memo || "없음"}`
+                        },
+                        {
+                            type: "mrkdwn",
+                            text: `*접수 일시:*\n${kstTime}`
+                        }
+                    ]
                 }
             ]
         };

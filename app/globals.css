@@ -3,6 +3,13 @@
 @tailwind utilities;
 
 @font-face {
+    font-family: 'Cafe24LovingU';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2405-3@1.1/Cafe24Lovingu.woff2') format('woff2');
+    font-weight: normal;
+    font-display: swap;
+}
+
+@font-face {
     font-family: 'Paperozi';
     src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-1Thin.woff2') format('woff2');
     font-weight: 100;
@@ -126,4 +133,80 @@
     src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Black.woff2') format('woff2');
     font-weight: 900;
     font-display: swap;
+}
+
+
+/* --- CTA Button Animations --- */
+@keyframes pulse-gentle {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+}
+
+@keyframes shine-sweep {
+    0% { left: -100%; }
+    20% { left: 150%; }
+    100% { left: 150%; }
+}
+
+.animate-pulse-gentle {
+    animation: pulse-gentle 2s infinite ease-in-out;
+}
+
+.shine-effect {
+    position: relative;
+    overflow: hidden;
+}
+
+.shine-effect::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -100%;
+    width: 60%;
+    height: 200%;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.4) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(25deg);
+    animation: shine-sweep 3.5s infinite ease-in-out;
+}
+
+/* --- Handwriting Animation --- */
+@keyframes write-on {
+    0% { clip-path: inset(0 100% 0 0); opacity: 0; }
+    1% { opacity: 1; }
+    100% { clip-path: inset(0 0 0 0); opacity: 1; }
+}
+
+.animate-write {
+    display: inline-block;
+    animation: write-on 2s cubic-bezier(0.445, 0.05, 0.55, 0.95) forwards;
+}
+
+/* --- SVG Check Draw Animation --- */
+@keyframes draw-check {
+    0% { stroke-dashoffset: 24; }
+    100% { stroke-dashoffset: 0; }
+}
+
+.check-draw {
+    stroke-dasharray: 24;
+    stroke-dashoffset: 24;
+}
+
+.check-draw.animate {
+    animation: draw-check 0.6s ease-out forwards;
+}
+
+/* --- Card Hover Lift --- */
+.card-hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
 }

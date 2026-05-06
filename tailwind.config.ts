@@ -11,6 +11,8 @@ const config: Config = {
             fontFamily: {
                 sans: ['"Paperozi"', 'sans-serif'],
                 pretendard: ['"Pretendard"', 'sans-serif'],
+                수퍼사이즈: ['"supersize-bk"', 'sans-serif'],
+                cafe24: ['"Cafe24LovingU"', 'cursive'],
             },
         },
     },
