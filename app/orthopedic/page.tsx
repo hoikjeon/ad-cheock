@@ -261,14 +261,13 @@ export default function OrthopedicPage() {
                             .animate-float {
                                 animation: float 5s ease-in-out infinite;
                             }
-                            @keyframes scanRight {
-                                0%   { transform: translateX(0px); }
-                                40%  { transform: translateX(22px); }
-                                60%  { transform: translateX(22px); }
-                                100% { transform: translateX(0px); }
+                            @keyframes scanUpDown {
+                                0%   { transform: scaleX(-1) translateY(-15px); }
+                                50%  { transform: scaleX(-1) translateY(15px); }
+                                100% { transform: scaleX(-1) translateY(-15px); }
                             }
                             .animate-scan {
-                                animation: scanRight 2.8s ease-in-out infinite;
+                                animation: scanUpDown 5s ease-in-out infinite;
                             }
                         `}} />
                 </section>
@@ -333,7 +332,7 @@ export default function OrthopedicPage() {
                                     fill
                                     className="object-contain"
                                 />
-                                <div className="absolute top-[10%] right-[-40px] w-[77%] h-[77%] animate-scan">
+                                <div className="absolute top-[10%] left-[-55px] w-[77%] h-[77%] animate-scan">
                                     <Image
                                         src="/images/kneescope.png"
                                         alt="관절내시경 장비"
@@ -374,20 +373,20 @@ export default function OrthopedicPage() {
                                             {/* 장점 3가지 아이콘 리스트 */}
                                             <div className="grid grid-cols-3 gap-2 md:gap-5 mb-8 relative z-10">
                                                 {[
-                                                    { 
-                                                        title: '빠른 회복', 
-                                                        desc: '시술 후\n바로 일상복귀', 
-                                                        icon: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7 md:w-8 md:h-8 text-teal-600"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                                                    {
+                                                        title: '정밀 진단',
+                                                        desc: '미세 손상\n발견 및 치료',
+                                                        icon: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7 md:w-8 md:h-8 text-teal-600"><path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
                                                     },
-                                                    { 
-                                                        title: '최소 절개', 
-                                                        desc: '2~3cm 절개\n흉터 최소화', 
+                                                    {
+                                                        title: '최소 절개',
+                                                        desc: '2~3cm 절개\n흉터 최소화',
                                                         icon: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7 md:w-8 md:h-8 text-teal-600"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
                                                     },
-                                                    { 
-                                                        title: '정밀 진단', 
-                                                        desc: '미세 손상\n발견 및 치료', 
-                                                        icon: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7 md:w-8 md:h-8 text-teal-600"><path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+                                                    {
+                                                        title: '빠른 회복',
+                                                        desc: '시술 후\n바로 일상복귀',
+                                                        icon: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7 md:w-8 md:h-8 text-teal-600"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
                                                     },
                                                 ].map((item, idx) => (
                                                     <div key={idx} className="flex flex-col items-center text-center">
@@ -406,7 +405,7 @@ export default function OrthopedicPage() {
                                             {/* 체크 항목 */}
                                             <div className="flex flex-col gap-3">
                                                 {[
-                                                    { highlight: '짧은 검사 시간:', text: '입원 없이 당일 외래 치료 가능\n(30분~)' },
+                                                    { highlight: '짧은 검사 시간:', text: '준비 30분 검사 5분' },
                                                     { highlight: '적용 대상:', text: '반월상 연골판 파열, 십자인대 손상,\n초기 퇴행성 관절염' },
                                                 ].map((item, idx) => (
                                                     <div key={idx} className="flex items-start gap-3 bg-gray-50/50 p-4 rounded-2xl border border-gray-100/60">
@@ -465,7 +464,7 @@ export default function OrthopedicPage() {
                             </h2>
                         </div>
                         <p className="text-[15px] md:text-[16px] text-gray-300 font-medium leading-[1.7] break-keep max-w-[500px] mx-auto opacity-90 mt-6">
-                            MRI는 뛰어난 검사 장비이지만, 무릎 관절 내부의 아주 미세한 연골 손상, 얇게 찢어진 인대, 혹은 관절 내 떠돌아다니는 작은 이물질(유리체) 등은 영상의학적 검사만으로는 명확히 잡아내기 어려울 수 있습니다.
+                            MRI는 뛰어난 검사 장비이지만, 무릎 관절 내부의 아주 미세한 연골 손상, 얇게 찢어진 인대, 슬개골의 어긋남, 혹은 관절 내 떠돌아다니는 작은 이물질(유리체) 등은 영상의학적 검사만으로는 명확히 잡아내기 어려울 수 있습니다.
                         </p>
                     </div>
 
@@ -527,23 +526,18 @@ export default function OrthopedicPage() {
                         const diseases = [
                             {
                                 kr: '슬개골 연골연화증', en: '슬개골 부정정렬',
-                                desc: '무릎뼈(슬개골) 뒷면 연골이 물러지거나 닳는 질환과, 슬개골이 정상 궤도에서 벗어나 움직이는 상태입니다. 젊은 여성, 운동선수에서 흔합니다.',
-                                symptoms: ['무릎 앞쪽(슬개골 주변) 둔통', '계단 오르내리기, 쪼그려 앉기, 오래 앉아 있을 때 통증("영화관 증후군")', '무릎을 굽혔다 펼 때 마찰음 또는 "사그락" 소리', '슬개골이 빠지는 느낌(아탈구감)', '무릎 앞쪽이 뻐근하고 힘이 빠지는 느낌']
+                                desc: '무릎뼈(슬개골) 연골이 물러지거나 닳는 질환과, 슬개골이 어긋나 충돌이 일어난 결과입니다. 나이와 관계없이 누구에게나 발생할 수 있습니다.',
+                                symptoms: ['무릎 앞쪽(슬개골 주변) 둔통', '계단 오르내리기, 쪼그려 앉기, 오래 앉아 있을 때 통증("영화관 증후군")', '무릎을 펴고 일어설때 통증', '무릎 앞쪽이 뻐근하고 힘이 빠지는 느낌']
                             },
                             {
                                 kr: '반월상 연골 파열', en: 'Meniscus Tear',
                                 desc: '무릎 관절 사이에 있는 초승달 모양의 연골판이 찢어지는 손상입니다. 스포츠 활동 중 무릎을 비틀거나 쪼그려 앉을 때 흔히 발생하며, 중장년층에서는 퇴행성 변화로도 생깁니다.',
-                                symptoms: ['무릎 안쪽 또는 바깥쪽의 콕콕 찌르는 통증', '무릎을 굽히거나 펼 때 "뚝", "딸깍" 하는 소리(클릭음)', '갑자기 무릎이 안 펴지거나 움직임이 막히는 잠김 현상(locking)', '쪼그려 앉기, 계단 내려오기 시 통증 악화', '관절 부종(특히 손상 후 24~48시간 사이)']
+                                symptoms: ['무릎 안쪽 또는 바깥쪽의 콕콕 찌르는 통증', '무릎을 굽히거나 펼 때 "뚝", "딸깍" 하는 소리(클릭음)', '갑자기 무릎이 안 펴지거나 움직임이 막히는 잠김 현상(locking)', '쪼그려 앉기, 계단 내려오기 시 통증 악화', '관절 부종 - 물이 차고 붓는다']
                             },
                             {
                                 kr: '십자인대 파열', en: 'ACL / PCL 손상',
                                 desc: '무릎 안쪽에 X자 모양으로 교차하는 두 인대가 끊어지는 손상입니다. 전방십자인대(ACL)는 점프 후 착지나 급격한 방향 전환 시, 후방십자인대(PCL)는 정강이 앞쪽에 강한 충격을 받았을 때 잘 손상됩니다.',
-                                symptoms: ['손상 순간 "퍽" 또는 "뚝" 하는 파열음', '즉각적인 심한 통증과 무릎 부종(혈관절증)', '무릎이 빠지는 느낌, 불안정감(giving way)', '계단 내려가기, 방향 전환 시 무릎이 흔들림', 'PCL 손상은 ACL보다 증상이 약해 만성기에 발견되기도 함']
-                            },
-                            {
-                                kr: '측부인대 손상', en: 'MCL / LCL 손상',
-                                desc: '무릎 안쪽(내측측부인대)과 바깥쪽(외측측부인대)을 잡아주는 인대 손상입니다. 무릎의 옆쪽으로 외력을 받았을 때 발생하며, 축구·격투기 같은 접촉 스포츠에서 흔합니다.',
-                                symptoms: ['무릎 안쪽 또는 바깥쪽의 국소적 통증과 압통', '해당 부위 부종 및 멍', '옆으로 무릎을 벌릴 때 통증 또는 벌어지는 느낌', '보행 시 무릎이 옆으로 휘청거림', '3도 완전 파열 시 관절 불안정성 뚜렷']
+                                symptoms: ['손상 순간 "퍽" 또는 "뚝" 하는 파열음', '즉각적인 심한 통증과 무릎 부종(혈관절증)', '무릎이 빠지는 느낌, 불안정감(giving way)', '계단 내려가기, 방향 전환 시 무릎이 흔들림']
                             },
                             {
                                 kr: '관절 연골 손상', en: '박리성 골연골염',
