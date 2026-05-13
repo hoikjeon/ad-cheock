@@ -5,6 +5,39 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
 
+const cartiSteps = [
+    {
+        step: '01',
+        title: '관절강 내부 탐색',
+        desc: '초소형 내시경 카메라를 관절 내에 삽입하여 연골 손상 범위와 관절 전체 상태를 면밀히 파악합니다.',
+        imgs: ['/images/1.jpg'],
+    },
+    {
+        step: '02',
+        title: '손상 부위 정밀 확인',
+        desc: '내시경 모니터를 통해 연골 결손 부위를 직접 눈으로 확인하고 치료 방법과 범위를 결정합니다.',
+        imgs: ['/images/2.jpg'],
+    },
+    {
+        step: '03',
+        title: '손상 연골 제거 및 세척',
+        desc: '불안정하게 떨어진 연골 조각과 염증 조직을 깨끗이 제거하고 관절 내부를 세척하여 치료를 준비합니다.',
+        imgs: ['/images/3.jpg', '/images/4.jpg'],
+    },
+    {
+        step: '04',
+        title: '미세 천공술 시행',
+        desc: '연골 아래 뼈에 작은 구멍을 내어 골수 깊은 곳에서 만들어지는 줄기세포가 연골 결손 부위에 도달할 수 있도록 통로를 만들어 줍니다. 이를 통해 1~2개월 동안 줄기세포가 지속적으로 흘러나오게 유도하여, 새로운 연골 조직이 자랄 수 있는 최적의 환경을 만듭니다.',
+        imgs: ['/images/5.jpg', '/images/6.jpg'],
+    },
+    {
+        step: '05',
+        title: '연골 재생 완성',
+        desc: '줄기세포에서 새로운 연골 조직이 형성되어 손상된 관절면이 회복되고 통증이 소실됩니다.',
+        imgs: ['/images/7.jpg', '/images/8.jpg'],
+    },
+];
+
 // Supabase 클라이언트 설정 (환경 변수 사용)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
@@ -69,6 +102,7 @@ export default function OrthopedicPage() {
     const [arthroTitleVisible, setArthroTitleVisible] = useState(false);
     const [cartiVisible, setCartiVisible] = useState(true);
     const [openStep, setOpenStep] = useState<number | null>(0);
+    const [slideIndices, setSlideIndices] = useState<number[]>([0, 0, 0, 0, 0]);
 
     // Refs
     const hookRef = useRef<HTMLDivElement>(null);
@@ -179,6 +213,21 @@ export default function OrthopedicPage() {
             cartiObs.disconnect();
         };
     }, []);
+
+    // 연골재생 단계 슬라이드 자동 전환
+    useEffect(() => {
+        if (openStep === null) return;
+        const imgs = cartiSteps[openStep].imgs;
+        if (imgs.length <= 1) return;
+        const timer = setInterval(() => {
+            setSlideIndices(prev => {
+                const next = [...prev];
+                next[openStep] = (next[openStep] + 1) % imgs.length;
+                return next;
+            });
+        }, 2500);
+        return () => clearInterval(timer);
+    }, [openStep]);
 
     // 상담 신청 제출 핸들러
     const handleSubmit = async (e: React.FormEvent) => {
@@ -542,7 +591,7 @@ export default function OrthopedicPage() {
                             {
                                 kr: '관절 연골 손상', en: '박리성 골연골염',
                                 desc: '관절 표면을 덮는 매끄러운 연골이 닳거나 떨어져 나가는 질환입니다. 박리성 골연골염은 연골 아래 뼈까지 함께 떨어져 조각이 관절 안을 떠다니는 상태로, 청소년기에 비교적 흔합니다.',
-                                symptoms: ['활동 시 둔한 통증, 휴식하면 완화', '관절이 자주 붓고 뻣뻣함', '떨어진 조각이 관절에 끼면 갑자기 무릎이 잠김', '"걸리는" 느낌이나 마찰음(crepitus)', '진행 시 조기 퇴행성 관절염으로 이어질 수 있음']
+                                symptoms: ['활동 시 둔한 통증, 휴식하면 완화', '관절이 자주 붓고 물이참', '떨어진 조각이 관절에 끼면 갑자기 무릎이 잠김', '"걸리는" 느낌이나 마찰음(crepitus)', '진행 시 조기 퇴행성 관절염으로 이어질 수 있음']
                             },
                             {
                                 kr: '추벽 증후군', en: 'Plica Syndrome',
@@ -552,7 +601,7 @@ export default function OrthopedicPage() {
                             {
                                 kr: '활막염', en: 'Synovitis',
                                 desc: '관절 안쪽을 덮고 있는 활막이 염증을 일으켜 관절액이 과도하게 분비되는 상태입니다. 외상, 감염, 류마티스 질환, 통풍 등 다양한 원인으로 발생합니다.',
-                                symptoms: ['관절이 따뜻하고 부풀어 오름', '만지면 말랑한 부종(관절 삼출액)', '움직일 때보다 가만히 있어도 둔한 통증', '관절 운동 범위 제한', '만성화 시 활막이 두꺼워지고 색조가 변함']
+                                symptoms: ['관절이 열감이 있고 붓는다', '움직일 때보다 가만히 있어도 둔한 통증', '다리가 무겁고 관절 운동 범위 제한', '만성화 시 활막이 두꺼워지고 색조가 변함']
                             },
                             {
                                 kr: '관절 내 유리체', en: 'Loose Body',
@@ -561,8 +610,7 @@ export default function OrthopedicPage() {
                             },
                             {
                                 kr: '활막 조직 검사', en: '류마티스·감염성 관절염',
-                                desc: '관절내시경은 진단이 모호한 관절염에서 활막을 직접 채취해 조직검사·균배양검사를 시행하는 데 사용됩니다.',
-                                symptoms: ['류마티스 관절염: 아침에 1시간 이상 지속되는 관절 강직, 좌우 대칭성 다발성 관절 부종, 피로감·미열', '감염성 관절염: 갑작스러운 한 관절의 극심한 통증·열감·발적', '고열·오한 같은 전신 증상', '체중 부하 시 견디기 힘든 통증(응급 처치가 필요한 상황)']
+                                desc: '관절내시경은 진단이 모호한 관절염에서 활막을 직접 채취해 조직검사·균배양검사를 시행하는 데 사용됩니다.\n\n다양한 경우에 조직검사 가능',
                             },
                         ];
                         return (
@@ -621,17 +669,19 @@ export default function OrthopedicPage() {
                                             {/* 설명 */}
                                             <p className="text-gray-300 text-[14px] leading-[1.7] break-keep mb-5">{diseases[openDiseaseIdx].desc}</p>
                                             {/* 주요 증상 */}
-                                            <div className="bg-teal-900/30 border border-teal-700/30 rounded-2xl p-4">
-                                                <p className="text-teal-400 text-[12px] font-bold tracking-widest uppercase mb-3">주요 증상</p>
-                                                <ul className="space-y-2.5">
-                                                    {diseases[openDiseaseIdx].symptoms.map((s, si) => (
-                                                        <li key={si} className="flex gap-2.5 items-start">
-                                                            <div className="mt-[6px] shrink-0 w-1.5 h-1.5 rounded-full bg-teal-400" />
-                                                            <p className="text-gray-200 text-[13px] leading-[1.6] break-keep">{s}</p>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
+                                            {diseases[openDiseaseIdx].symptoms && diseases[openDiseaseIdx].symptoms.length > 0 && (
+                                                <div className="bg-teal-900/30 border border-teal-700/30 rounded-2xl p-4">
+                                                    <p className="text-teal-400 text-[12px] font-bold tracking-widest uppercase mb-3">주요 증상</p>
+                                                    <ul className="space-y-2.5">
+                                                        {diseases[openDiseaseIdx].symptoms.map((s, si) => (
+                                                            <li key={si} className="flex gap-2.5 items-start">
+                                                                <div className="mt-[6px] shrink-0 w-1.5 h-1.5 rounded-full bg-teal-400" />
+                                                                <p className="text-gray-200 text-[13px] leading-[1.6] break-keep">{s}</p>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 )}
@@ -659,44 +709,17 @@ export default function OrthopedicPage() {
                     </div>
 
                     <div className="w-full max-w-[500px] mx-auto">
-                        {[
-                            {
-                                step: '01',
-                                title: '관절강 내부 탐색',
-                                desc: '초소형 내시경 카메라를 관절 내에 삽입하여 연골 손상 범위와 관절 전체 상태를 면밀히 파악합니다.',
-                                img: '/images/kneescp1.png',
-                            },
-                            {
-                                step: '02',
-                                title: '손상 부위 정밀 확인',
-                                desc: '내시경 모니터를 통해 연골 결손 부위를 직접 눈으로 확인하고 치료 방법과 범위를 결정합니다.',
-                                img: '/images/kneescp2.png',
-                            },
-                            {
-                                step: '03',
-                                title: '손상 연골 제거 및 세척',
-                                desc: '불안정하게 떨어진 연골 조각과 염증 조직을 깨끗이 제거하고 관절 내부를 세척하여 치료를 준비합니다.',
-                                img: '/images/kneescp3.png',
-                            },
-                            {
-                                step: '04',
-                                title: '미세 천공술 시행',
-                                desc: '연골 아래 뼈에 작은 구멍을 내어 골수 줄기세포가 흘러나오도록 유도, 새로운 연골 조직이 자랄 수 있는 환경을 만듭니다.',
-                                img: '/images/kneescp4.png',
-                            },
-                            {
-                                step: '05',
-                                title: '연골 재생 완성',
-                                desc: '줄기세포에서 새로운 연골 조직이 형성되어 손상된 관절면이 회복되고 통증이 감소합니다.',
-                                img: '/images/kneescp5.png',
-                            },
-                        ].map((item, index, arr) => (
+                        {cartiSteps.map((item, index, arr) => {
+                            const isOpen = openStep === index;
+                            const hasMultiple = item.imgs.length > 1;
+                            const slideIdx = slideIndices[index];
+                            return (
                             <div key={index} className="grid grid-cols-[56px_1fr] gap-x-4">
                                 {/* 왼쪽: 원 + 라인 */}
                                 <div className="flex flex-col items-center">
                                     <div
-                                        className={`w-[56px] h-[56px] rounded-full flex items-center justify-center text-white font-extrabold text-[13px] shadow-lg border-4 border-white shrink-0 cursor-pointer transition-all duration-300 ${openStep === index ? 'bg-teal-500 scale-110' : 'bg-teal-600'}`}
-                                        onClick={() => setOpenStep(openStep === index ? null : index)}
+                                        className={`w-[56px] h-[56px] rounded-full flex items-center justify-center text-white font-extrabold text-[13px] shadow-lg border-4 border-white shrink-0 cursor-pointer transition-all duration-300 ${isOpen ? 'bg-teal-500 scale-110' : 'bg-teal-600'}`}
+                                        onClick={() => setOpenStep(isOpen ? null : index)}
                                     >
                                         {item.step}
                                     </div>
@@ -708,17 +731,19 @@ export default function OrthopedicPage() {
                                 {/* 오른쪽: 아코디언 카드 */}
                                 <div className="pb-4">
                                     <div
-                                        className={`bg-white rounded-2xl shadow-[0_4px_16px_rgba(0,0,0,0.07)] border overflow-hidden transition-all duration-300 cursor-pointer ${openStep === index ? 'border-teal-300' : 'border-gray-100'}`}
-                                        onClick={() => setOpenStep(openStep === index ? null : index)}
+                                        className={`bg-white rounded-2xl shadow-[0_4px_16px_rgba(0,0,0,0.07)] border overflow-hidden transition-all duration-300 ${isOpen ? 'border-teal-300' : 'border-gray-100'}`}
                                     >
                                         {/* 항상 보이는 헤더 */}
-                                        <div className="flex items-center justify-between px-4 py-3.5 gap-3">
-                                            <h3 className={`text-[16px] font-bold tracking-tight transition-colors duration-300 ${openStep === index ? 'text-teal-600' : 'text-gray-900'}`}>
+                                        <div
+                                            className="flex items-center justify-between px-4 py-3.5 gap-3 cursor-pointer"
+                                            onClick={() => setOpenStep(isOpen ? null : index)}
+                                        >
+                                            <h3 className={`text-[16px] font-bold tracking-tight transition-colors duration-300 ${isOpen ? 'text-teal-600' : 'text-gray-900'}`}>
                                                 {item.title}
                                             </h3>
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
-                                                className={`w-5 h-5 shrink-0 text-teal-500 transition-transform duration-300 ${openStep === index ? 'rotate-180' : ''}`}
+                                                className={`w-5 h-5 shrink-0 text-teal-500 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
                                             >
                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -726,16 +751,50 @@ export default function OrthopedicPage() {
                                         </div>
 
                                         {/* 펼쳐지는 콘텐츠 */}
-                                        <div className={`transition-all duration-500 ease-in-out overflow-hidden ${openStep === index ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                                            <div className="relative w-full aspect-[4/3]">
-                                                <Image
-                                                    src={item.img}
-                                                    alt={item.title}
-                                                    fill
-                                                    className="object-cover"
-                                                />
-                                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                                                <span className="absolute bottom-3 left-4 text-white text-[12px] font-bold tracking-widest opacity-80">STEP {item.step}</span>
+                                        <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isOpen ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                                            {/* 이미지 슬라이더 */}
+                                            <div className="relative w-full aspect-[4/3] overflow-hidden">
+                                                {item.imgs.map((src, imgIdx) => (
+                                                    <div
+                                                        key={imgIdx}
+                                                        className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${imgIdx === slideIdx ? 'opacity-100' : 'opacity-0'}`}
+                                                    >
+                                                        <Image
+                                                            src={src}
+                                                            alt={`${item.title} ${imgIdx + 1}`}
+                                                            fill
+                                                            className="object-cover"
+                                                        />
+                                                    </div>
+                                                ))}
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none"></div>
+                                                <span className="absolute bottom-3 left-4 text-white text-[12px] font-bold tracking-widest opacity-80 pointer-events-none">STEP {item.step}</span>
+                                                {/* 여러 장일 때 좌우 버튼 + 점 인디케이터 */}
+                                                {hasMultiple && (
+                                                    <>
+                                                        <button
+                                                            className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 flex items-center justify-center text-white hover:bg-black/60 transition-colors z-10"
+                                                            onClick={e => { e.stopPropagation(); setSlideIndices(prev => { const n = [...prev]; n[index] = (slideIdx - 1 + item.imgs.length) % item.imgs.length; return n; }); }}
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                                                        </button>
+                                                        <button
+                                                            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 flex items-center justify-center text-white hover:bg-black/60 transition-colors z-10"
+                                                            onClick={e => { e.stopPropagation(); setSlideIndices(prev => { const n = [...prev]; n[index] = (slideIdx + 1) % item.imgs.length; return n; }); }}
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                                                        </button>
+                                                        <div className="absolute bottom-3 right-4 flex gap-1.5 z-10">
+                                                            {item.imgs.map((_, dotIdx) => (
+                                                                <button
+                                                                    key={dotIdx}
+                                                                    className={`w-2 h-2 rounded-full transition-all duration-300 ${dotIdx === slideIdx ? 'bg-white scale-125' : 'bg-white/50'}`}
+                                                                    onClick={e => { e.stopPropagation(); setSlideIndices(prev => { const n = [...prev]; n[index] = dotIdx; return n; }); }}
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    </>
+                                                )}
                                             </div>
                                             <div className="px-4 py-4 border-t border-gray-100">
                                                 <p className="text-[14px] text-gray-600 leading-[1.65] break-keep">{item.desc}</p>
@@ -744,7 +803,8 @@ export default function OrthopedicPage() {
                                     </div>
                                 </div>
                             </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </section>
 
@@ -775,6 +835,12 @@ export default function OrthopedicPage() {
                                 icon: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" /></svg>,
                                 title: 'MRI보다 정확한 진단',
                                 desc: 'MRI보다 정확하게 직접 병변을 확인하고 진단합니다.',
+                                color: 'emerald'
+                            },
+                            {
+                                icon: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7"><path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>,
+                                title: '관절 속 찌꺼기 청소로 통증의 원인을 씻어냅니다',
+                                desc: '퇴행성 관절염으로 인해 마치 모래성처럼 부서져 내린 연골 부스러기들이 무릎 속을 떠다니며 염증과 통증을 유발합니다. 관절내시경은 병변을 확인하는 동시에, 맑은 식염수를 순환시켜 이러한 찌꺼기들을 깨끗하게 씻어내는 \'세척 치료\'가 동시에 가능하여 시술 후 즉각적인 통증 감소와 부드러운 움직임을 되찾아 줍니다.',
                                 color: 'emerald'
                             },
                             {
@@ -853,11 +919,7 @@ export default function OrthopedicPage() {
                                     "경희대학교 의학전문원 실습지도교수",
                                     "좋은 삼선병원 정형외과 수련 주임과장",
                                     "좋은 강안병원 정형외과 주임과장",
-                                    "홍제병원 의무원장",
-                                    "바로선정형외과 원장",
                                     "롯데자이언츠 주치의",
-                                    "일본 가나자와 의과대학 병원 척추센터 연수",
-                                    "척추관 협착증에 대한 최소감압술 논문 발표 (2002년 일본 나고야)",
                                     "국내·외 다수 논문 발표",
                                 ].map((item, idx) => (
                                     <li key={idx} className="flex gap-3 items-start group">
@@ -937,7 +999,7 @@ export default function OrthopedicPage() {
                             {
                                 step: '02',
                                 title: '관절내시경 진단 및 시술',
-                                desc: '최소 마취 후, 관절내시경을 통한 정확한 병변 확인 및 동시 치료를 진행합니다.',
+                                desc: '부분 마취 후, 관절내시경을 통한 정확한 병변 확인 및 치료를 진행합니다.',
                                 icon: (
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-white">
                                         <path d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
