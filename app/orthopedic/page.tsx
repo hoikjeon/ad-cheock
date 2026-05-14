@@ -310,14 +310,24 @@ export default function OrthopedicPage() {
                             .animate-float {
                                 animation: float 5s ease-in-out infinite;
                             }
-                            @keyframes scanUpDown {
-                                0%   { transform: scaleX(-1) translateY(-15px); }
-                                50%  { transform: scaleX(-1) translateY(15px); }
-                                100% { transform: scaleX(-1) translateY(-15px); }
+                            @keyframes scanLeftRight {
+                                0%   { transform: scaleX(-1) translateX(-12px); }
+                                50%  { transform: scaleX(-1) translateX(12px); }
+                                100% { transform: scaleX(-1) translateX(-12px); }
                             }
                             .animate-scan {
-                                animation: scanUpDown 5s ease-in-out infinite;
+                                animation: scanLeftRight 4s ease-in-out infinite;
                             }
+                            @keyframes scopeGlow {
+                                0%, 100% { opacity: 0.65; transform: translate(-50%, -50%) scale(1); }
+                                50%      { opacity: 1;    transform: translate(-50%, -50%) scale(1.3); }
+                            }
+                            .animate-scope-glow { animation: scopeGlow 2s ease-in-out infinite; }
+                            @keyframes scopeBeam {
+                                0%, 100% { opacity: 0.3; }
+                                50%      { opacity: 0.65; }
+                            }
+                            .animate-scope-beam { animation: scopeBeam 2s ease-in-out infinite; }
                         `}} />
                 </section>
 
@@ -387,6 +397,29 @@ export default function OrthopedicPage() {
                                         alt="관절내시경 장비"
                                         fill
                                         className="object-contain drop-shadow-xl"
+                                    />
+                                    {/* 내시경 팁 불빛 — scaleX(-1) 후 우측에 렌더링됨 */}
+                                    <div
+                                        className="absolute animate-scope-glow pointer-events-none"
+                                        style={{
+                                            left: '11%', top: '44%',
+                                            width: '28px', height: '28px',
+                                            background: 'radial-gradient(circle, rgba(255,255,200,0.95) 0%, rgba(255,240,80,0.55) 45%, transparent 100%)',
+                                            filter: 'blur(4px)',
+                                            transform: 'translate(-50%, -50%)',
+                                        }}
+                                    />
+                                    {/* 광선 빔 */}
+                                    <div
+                                        className="absolute animate-scope-beam pointer-events-none"
+                                        style={{
+                                            left: '11%', top: '44%',
+                                            width: '70px', height: '18px',
+                                            background: 'linear-gradient(to left, transparent 0%, rgba(255,255,180,0.35) 60%, rgba(255,255,200,0.55) 100%)',
+                                            filter: 'blur(5px)',
+                                            transform: 'translate(-50%, -50%)',
+                                            borderRadius: '50%',
+                                        }}
                                     />
                                 </div>
                             </div>
