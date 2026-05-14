@@ -861,7 +861,7 @@ export default function OrthopedicPage() {
                         <div className="relative rounded-2xl overflow-hidden shadow-[0_8px_32px_rgba(13,148,136,0.18)] border border-teal-100">
                             <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-full">
                                 <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                                <span className="text-white text-[11px] font-bold tracking-wider">실제 시술 영상</span>
+                                <span className="text-white text-[11px] font-bold tracking-wider">실제 관절내시경 검사 영상</span>
                             </div>
                             <video
                                 src="/images/orthopedic-scopic.mp4"
@@ -874,7 +874,7 @@ export default function OrthopedicPage() {
                             {/* 하단 그라데이션 오버레이 */}
                             <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/40 to-transparent pointer-events-none"></div>
                             <div className="absolute bottom-3 left-0 right-0 flex justify-center">
-                                <span className="text-white/80 text-[11px] font-medium tracking-wide">관절내시경으로 직접 보며 진행하는 시술</span>
+                                <span className="text-white/80 text-[11px] font-medium tracking-wide">관절내시경으로 직접 보며 검사 시행</span>
                             </div>
                         </div>
                     </div>
