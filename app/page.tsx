@@ -142,6 +142,8 @@ export default function MobileMain() {
     const warningTextRef = useRef<HTMLDivElement>(null);
     const conclusionTextRef = useRef<HTMLDivElement>(null);
     const sliderRef = useRef<HTMLDivElement>(null);
+    const isDragging = useRef(false);
+    const rafId = useRef<number | null>(null);
 
     // 페이지 로딩 애니메이션
     useEffect(() => {
@@ -362,6 +364,52 @@ export default function MobileMain() {
             qaObserver.disconnect();
             reviewObserver.disconnect();
             reasonsObserver.disconnect();
+        };
+    }, []);
+
+    // 슬라이더 드래그 핸들러 (글로벌 이벤트로 매끄러운 동작)
+    const updateSliderFromClientX = (clientX: number) => {
+        if (rafId.current !== null) return;
+        rafId.current = requestAnimationFrame(() => {
+            const rect = sliderRef.current?.getBoundingClientRect();
+            if (!rect) { rafId.current = null; return; }
+            const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+            setSliderPos((x / rect.width) * 100);
+            rafId.current = null;
+        });
+    };
+
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            if (!isDragging.current) return;
+            e.preventDefault();
+            updateSliderFromClientX(e.clientX);
+        };
+        const handleMouseUp = () => {
+            isDragging.current = false;
+            document.body.style.userSelect = '';
+            document.body.style.cursor = '';
+        };
+        const handleTouchMove = (e: TouchEvent) => {
+            if (!isDragging.current) return;
+            e.preventDefault();
+            updateSliderFromClientX(e.touches[0].clientX);
+        };
+        const handleTouchEnd = () => {
+            isDragging.current = false;
+        };
+
+        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mouseup', handleMouseUp);
+        window.addEventListener('touchmove', handleTouchMove, { passive: false });
+        window.addEventListener('touchend', handleTouchEnd);
+
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
+            if (rafId.current !== null) cancelAnimationFrame(rafId.current);
         };
     }, []);
 
@@ -741,20 +789,16 @@ export default function MobileMain() {
                             {/* 인터랙티브 비교 슬라이더 */}
                             <div
                                 ref={sliderRef}
-                                className="relative w-full max-w-[400px] aspect-[4/5] mt-6 mx-auto rounded-xl overflow-hidden shadow-lg border border-gray-200 cursor-col-resize select-none"
-                                onMouseMove={(e) => {
-                                    if (e.buttons !== 1) return;
-                                    const rect = sliderRef.current?.getBoundingClientRect();
-                                    if (!rect) return;
-                                    const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
-                                    setSliderPos((x / rect.width) * 100);
+                                className="relative w-full max-w-[400px] aspect-[4/5] mt-6 mx-auto rounded-xl overflow-hidden shadow-lg border border-gray-200 cursor-col-resize select-none touch-none"
+                                onMouseDown={(e) => {
+                                    isDragging.current = true;
+                                    document.body.style.userSelect = 'none';
+                                    document.body.style.cursor = 'col-resize';
+                                    updateSliderFromClientX(e.clientX);
                                 }}
-                                onTouchMove={(e) => {
-                                    const rect = sliderRef.current?.getBoundingClientRect();
-                                    if (!rect) return;
-                                    const touch = e.touches[0];
-                                    const x = Math.max(0, Math.min(touch.clientX - rect.left, rect.width));
-                                    setSliderPos((x / rect.width) * 100);
+                                onTouchStart={(e) => {
+                                    isDragging.current = true;
+                                    updateSliderFromClientX(e.touches[0].clientX);
                                 }}
                             >
                                 {/* 후 (배경) */}
