@@ -5,3 +5,14 @@ node_modules
 
 # 환자 사진 원본 (개인정보 - 절대 업로드 금지)
 others/
+
+# IDE and Logs
+.vscode/
+build_log.txt
+build_output.txt
+*.tsbuildinfo
+test-fetch.js
+fetch_font.js
+typekit.js
+text free
+

@@ -491,11 +491,11 @@ export default function MobileMain() {
                                     <span className="text-blue-400 text-[11px] font-bold tracking-[0.15em] uppercase">Yonsei Cheok</span>
                                 </div>
                                 <h2 className="text-white text-[23px] md:text-[27px] font-extrabold leading-[1.35] mb-5 break-keep tracking-[-0.02em]">
-                                    <span className="text-yellow-400 block mb-1.5 hover:scale-[1.02] transition-transform origin-left">&apos;의사들이 수술법을 배우러 오는 곳&apos;</span>
-                                    당신의 척추는 누구에게 맡기시겠습니까?
+                                    <span className="text-yellow-400 block mb-1.5 hover:scale-[1.02] transition-transform origin-left">&apos;의사들이 수술법을<br />배우러 오는 곳&apos;</span>
+                                    당신의 척추는<br />누구에게 맡기시겠습니까?
                                 </h2>
                                 <p className="text-gray-300 text-[16px] md:text-[18px] leading-[1.6] font-medium break-keep opacity-90">
-                                    같은 양방향 척추내시경이라도 결과가 다른 이유,<br />
+                                    같은 양방향 척추내시경이라도<br className="block sm:hidden" /> 결과가 다른 이유,<br />
                                     바로 <span className="text-blue-400 font-extrabold underline decoration-2 underline-offset-8 decoration-blue-500/50">&apos;의사를 가르치는&apos; 숙련도의 차이</span>입니다.
                                 </p>
                             </div>
@@ -569,8 +569,10 @@ export default function MobileMain() {
 
                         <div className={`text-left mb-6 transition-all duration-1000 ease-out transform delay-300 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                             <p className="text-blue-400 font-extrabold text-[15px] mb-2 drop-shadow-md font-pretendard tracking-[-0.01em]">The Global Standard in UBE</p>
-                            <h1 className="text-white text-[26.5px] font-extrabold leading-snug drop-shadow-lg font-pretendard tracking-[-0.01em] whitespace-nowrap mb-8">
-                                해외에서 인정받는<br />양방향 척추내시경 연세척병원
+                            <h1 className="text-white text-[26.5px] font-extrabold leading-snug drop-shadow-lg font-pretendard tracking-[-0.01em] mb-8 break-keep">
+                                해외에서 인정받는<br />
+                                양방향 척추내시경<br className="block sm:hidden" />
+                                연세척병원
                             </h1>
                         </div>
 
@@ -593,7 +595,7 @@ export default function MobileMain() {
                         <div className="inline-flex items-center justify-center bg-red-600/20 border border-red-500/30 px-4 py-1.5 rounded-full mb-5">
                             <span className="text-red-400 font-bold text-[14px] tracking-tight">🚨 골든타임 경고</span>
                         </div>
-                        <div ref={warningTextRef} className="relative text-[25px] md:text-[28px] font-extrabold leading-[1.35] tracking-[-0.02em] mb-4 break-keep text-left md:text-center w-full max-w-[400px] md:max-w-none mx-auto">
+                        <div ref={warningTextRef} className="relative text-[20px] xs:text-[22px] sm:text-[25px] md:text-[28px] font-extrabold leading-[1.35] tracking-[-0.02em] mb-4 break-keep text-left md:text-center w-full max-w-[400px] md:max-w-none mx-auto">
                             <h2 className="flex flex-col items-start md:items-center">
                                 {/* 첫 번째 줄 (0~50% 구간 먼저 채워짐) */}
                                 <span className="relative inline-block">
@@ -625,7 +627,9 @@ export default function MobileMain() {
                             </h2>
                         </div>
                         <p className="text-[16px] md:text-[17px] text-gray-300 font-medium leading-[1.6] break-keep max-w-[500px] mx-auto opacity-90">
-                            단순한 근육통이 아닙니다. 신경 손상이 진행되고 있다는 우리 몸의 긴급 구조 요청입니다. 골든타임을 놓치지 마세요.
+                            단순한 근육통이 아닙니다.<br />
+                            신경 손상이 진행되고 있다는 우리 몸의 긴급 구조 요청입니다.<br />
+                            골든타임을 놓치지 마세요.
                         </p>
                     </div>
 
@@ -693,8 +697,8 @@ export default function MobileMain() {
                         <p className="text-[15px] md:text-[16px] leading-[1.65] text-white break-keep opacity-95">
                             신경은 한 번 손상되면 회복이 어렵습니다.<br/>
                             연세척병원은 무조건적인 수술을 권하지 않습니다.<br/>
-                            하지만 <span className="text-yellow-300 font-extrabold">&apos;반드시 수술이 필요한 순간&apos;</span>에는 숙련된 의료진이<br className="hidden sm:block"/>
-                            가장 안전하고 확실한 길을 제시합니다.
+                            하지만 <span className="text-yellow-300 font-extrabold">&apos;반드시 수술이 필요한 순간&apos;</span>에는{" "}<br className="block sm:hidden" />
+                            숙련된 의료진이 가장 안전하고 확실한 길을 제시합니다.
                         </p>
                     </div>
                 </section>
@@ -832,12 +836,12 @@ export default function MobileMain() {
                         {/* --- 양방향 척추내시경 장점 리스트 --- */}
                         <div ref={benefitsRef} className="flex flex-col gap-4 md:gap-5 w-full max-w-[420px] md:max-w-[480px] px-4 font-pretendard mt-1 md:mt-2 pt-2 pb-10">
                             {[
-                                { black1: "넓은 시야 확보로 ", blue: "정밀 수술 가능", black2: "" },
-                                { black1: "조직의 ", blue: "손상이 적고", black2: ", 통증 및 부작용이 매우 적음" },
-                                { black1: "", blue: "치료의 범위가 광범위함", black2: "", subText: "(경추, 흉추, 요추, 유합술 및 재수술도 가능)" },
-                                { black1: "절개 수술과 같이 높은 성공률", blue: "", black2: "" },
-                                { black1: "", blue: "짧은 수술시간 및 빠른 회복", black2: "" },
-                                { black1: "", blue: "부분마취", black2: "로 수술 가능" },
+                                { black1: "넓은 시야 확보로 " as React.ReactNode, blue: "정밀 수술 가능" as React.ReactNode, black2: "" as React.ReactNode },
+                                { black1: "조직의 " as React.ReactNode, blue: "손상이 적고" as React.ReactNode, black2: <>, 통증 및 부작용이 매우<br className="block sm:hidden" /> 적음</> as React.ReactNode },
+                                { black1: "" as React.ReactNode, blue: "치료의 범위가 광범위함" as React.ReactNode, black2: "" as React.ReactNode, subText: "(경추, 흉추, 요추, 유합술 및 재수술도 가능)" },
+                                { black1: "절개 수술과 같이 높은 성공률" as React.ReactNode, blue: "" as React.ReactNode, black2: "" as React.ReactNode },
+                                { black1: "" as React.ReactNode, blue: "짧은 수술시간 및 빠른 회복" as React.ReactNode, black2: "" as React.ReactNode },
+                                { black1: "" as React.ReactNode, blue: "부분마취" as React.ReactNode, black2: "로 수술 가능" as React.ReactNode },
                             ].map((item, index) => (
                                 <div
                                     key={index}
@@ -922,13 +926,19 @@ export default function MobileMain() {
                             </h2>
                             <div className="space-y-4 text-[16px] md:text-[18px] font-medium leading-[1.7] tracking-[-0.01em] text-gray-600 break-keep">
                                 <p>
-                                    연세척병원 이남, 김동한 병원장은 수많은 고난도 수술을 성공시키며 쌓아온 독보적인 임상 경험을 병원 안에만 머물게 하지 않습니다.
+                                    연세척병원 이남, 김동한 병원장은<br />
+                                    수많은 고난도 수술을 성공시키며 쌓아온<br />
+                                    독보적인 임상 경험을 병원 안에만 머물게 하지 않습니다.
                                 </p>
                                 <p>
-                                    정기적인 심포지엄과 라이브 서저리(Live Surgery) 시연을 통해 <span className="font-bold text-gray-900">국내외 신경외과 전문의들에게 최신 척추 수술 기법과 노하우를 직접 전수하고 있습니다.</span>
+                                    정기적인 심포지엄과 라이브 서저리(Live Surgery) 시연을 통해<br />
+                                    <span className="font-bold text-gray-900">국내외 신경외과 전문의들에게<br />
+                                    최신 척추 수술 기법과 노하우를 직접 전수하고 있습니다.</span>
                                 </p>
                                 <p>
-                                    &apos;의사를 가르치는 의사&apos;라는 타이틀은 단순히 실력이 뛰어나다는 것을 넘어, <span className="font-bold text-gray-900">가장 안전하고 검증된 의술만을 환자에게 제공하겠다는</span> 연세척병원의 굳은 약속입니다.
+                                    &apos;의사를 가르치는 의사&apos;라는 타이틀은 단순히 실력이 뛰어나다는 것을 넘어,<br />
+                                    <span className="font-bold text-gray-900">가장 안전하고 검증된 의술만을 환자에게 제공하겠다는</span><br />
+                                    연세척병원의 굳은 약속입니다.
                                 </p>
                             </div>
                         </div>
@@ -1127,7 +1137,9 @@ export default function MobileMain() {
                                 신경외과 의사를 가르치는<br />신경외과 전문의
                             </h3>
                             <p className="mt-4 text-[15.5px] md:text-[17px] text-gray-600 font-medium leading-[1.6] break-keep px-2">
-                                미국, 홍콩, 브라질, 사우디 등 세계 <span className="inline-block min-w-[1.2em] text-center tabular-nums text-blue-600 font-extrabold text-[20px]">{countUpValues.countries}</span>개국에서 <span className="inline-block min-w-[1.2em] text-center tabular-nums text-blue-600 font-extrabold text-[20px]">{countUpValues.doctors}</span>여 명의 해외 척추 전문의들이 직접 찾아와 그 노하우를 배워갑니다.
+                                미국, 홍콩, 브라질, 사우디 등 세계 <span className="inline-block min-w-[1.2em] text-center tabular-nums text-blue-600 font-extrabold text-[20px]">{countUpValues.countries}</span>개국에서<br />
+                                <span className="inline-block min-w-[1.2em] text-center tabular-nums text-blue-600 font-extrabold text-[20px]">{countUpValues.doctors}</span>여 명의 해외 척추 전문의들이 직접 찾아와<br />
+                                그 노하우를 배워갑니다.
                             </p>
                         </div>
 
@@ -1229,10 +1241,14 @@ export default function MobileMain() {
                         {/* 하단 설명 텍스트 */}
                         <div className="px-6 mt-8 font-pretendard text-center text-[15px] md:text-[17px] text-[#e0e5ed] font-medium leading-[1.6] break-keep flex flex-col gap-4 relative z-30">
                             <p>
-                                연세척병원 이남, 김동한 병원장이 세계적인 의학 전문 출판사 Springer에서 발행한 &apos;양방향 척추내시경 교과서&apos;의 시리즈에 공동 저자로 참여했습니다.
+                                연세척병원 이남, 김동한 병원장이<br />
+                                세계적인 의학 전문 출판사 Springer에서 발행한<br />
+                                &apos;양방향 척추내시경 교과서&apos; 시리즈에 공동 저자로 참여했습니다.
                             </p>
                             <p>
-                                본 교과서는 전 세계 척추내시경 집도의들에게 바이블과 같은 역할을 하고 있으며, 이는 연세척병원 의료진의 세계적인 수준을 보여주는 뜻깊은 결과물입니다.
+                                본 교과서는 전 세계 척추내시경 집도의들에게<br />
+                                바이블과 같은 역할을 하고 있으며,<br />
+                                이는 연세척병원 의료진의 세계적인 수준을 보여주는 뜻깊은 결과물입니다.
                             </p>
                         </div>
                     </div>
@@ -1621,7 +1637,8 @@ export default function MobileMain() {
                                 숙련된 전문의의 <span className="text-[#3b609c] font-black underline decoration-2 underline-offset-4">미세한 컨트롤</span>,
                             </p>
                             <p>
-                                이것이 다른 의사들이 연세척병원을 찾아와<br />
+                                이것이 다른 의사들이<br />
+                                연세척병원을 찾아와<br />
                                 직접 눈으로 확인하고 배우는
                             </p>
                             <p className="mt-4 text-[19px] md:text-[23px] text-[#111111]">
