@@ -100,6 +100,7 @@ export default function OrthopedicPage() {
     const [outroTextProgress, setOutroTextProgress] = useState(0);
     const [arthroVisible, setArthroVisible] = useState(false);
     const [arthroTitleVisible, setArthroTitleVisible] = useState(false);
+    const [baVisible, setBaVisible] = useState(false);
     const [cartiVisible, setCartiVisible] = useState(true);
     const [openStep, setOpenStep] = useState<number | null>(0);
     const [slideIndices, setSlideIndices] = useState<number[]>([0, 0, 0, 0, 0]);
@@ -117,6 +118,7 @@ export default function OrthopedicPage() {
     const arthroRef = useRef<HTMLDivElement>(null);
     const arthroTitleRef = useRef<HTMLDivElement>(null);
     const cartiRef = useRef<HTMLDivElement>(null);
+    const baRef = useRef<HTMLDivElement>(null);
 
     // 개인정보 입력을 위한 상태
     const [name, setName] = useState('');
@@ -186,6 +188,7 @@ export default function OrthopedicPage() {
         const outroObs = createObserver(setOutroVisible, 0.1);
         const arthroObs = createObserver(setArthroVisible, 0.1);
         const arthroTitleObs = createObserver(setArthroTitleVisible, 0.15);
+        const baObs = createObserver(setBaVisible, 0.15);
 
         if (hookRef.current) hookObs.observe(hookRef.current);
         if (problemRef.current) problemObs.observe(problemRef.current);
@@ -196,6 +199,7 @@ export default function OrthopedicPage() {
         if (outroRef.current) outroObs.observe(outroRef.current);
         if (arthroRef.current) arthroObs.observe(arthroRef.current);
         if (arthroTitleRef.current) arthroTitleObs.observe(arthroTitleRef.current);
+        if (baRef.current) baObs.observe(baRef.current);
         const cartiObs = createObserver(setCartiVisible, 0.1);
         if (cartiRef.current) cartiObs.observe(cartiRef.current);
 
@@ -210,6 +214,7 @@ export default function OrthopedicPage() {
             outroObs.disconnect();
             arthroObs.disconnect();
             arthroTitleObs.disconnect();
+            baObs.disconnect();
             cartiObs.disconnect();
         };
     }, []);
@@ -288,7 +293,8 @@ export default function OrthopedicPage() {
                                     무릎 통증, 왜 계속될까요?
                                 </h1>
                                 <p className="text-gray-300 text-[15px] md:text-[17px] leading-[1.65] font-medium break-keep opacity-90">
-                                    검사 결과는 깨끗하다지만, 계단을 오를 때나 앉았다 일어설 때 느껴지는 찌릿한 통증.<br />
+                                    검사 결과는 깨끗하다지만,<br />
+                                    계단을 오를 때나 앉았다 일어설 때 느껴지는 찌릿한 통증.<br />
                                     원인 모를 무릎 통증으로 고통받고 계시다면,<br />
                                     <span className="text-teal-400 font-extrabold underline decoration-2 underline-offset-8 decoration-teal-500/50">&apos;진단 방법&apos;을 바꿔야 할 때</span>입니다.
                                 </p>
@@ -337,7 +343,7 @@ export default function OrthopedicPage() {
                     {/* 캐치프레이즈 */}
                     <div ref={arthroRef} className={`font-pretendard font-extrabold text-[#0d5e4f] flex flex-col items-center gap-1 transition-opacity duration-1000 ease-in relative z-20 ${arthroVisible ? 'opacity-100' : 'opacity-0'}`}>
                         <p className="text-[18px] tracking-[0.5em] mb-1 opacity-60">· · · · ·</p>
-                        <p className="text-[25px] tracking-tight">무릎, 어깨 속 문제 직접</p>
+                        <p className="text-[25px] tracking-tight">무릎, 어깨 속 문제를</p>
                         <p className="text-[27px] tracking-tight">직접 보고 치료합니다!</p>
                     </div>
 
@@ -433,8 +439,8 @@ export default function OrthopedicPage() {
                                 </p>
                                 <p className="text-[17px] md:text-[19px] font-semibold text-[#111111] tracking-tight leading-[1.5]">
                                     X-ray, MRI 등 영상 검사로는<br />
-                                    확인이 어려운 관절 내부 병변을 정밀하게<br />
-                                    진단할 수 있습니다.
+                                    확인이 어려운 관절 내부 병변을<br />
+                                    정밀하게 진단할 수 있습니다.
                                 </p>
                                 <p className="text-[17px] md:text-[19px] font-semibold text-[#111111] tracking-tight leading-[1.5]">
                                     검사, 치료를 동시에 수행 가능한<br />
@@ -545,8 +551,12 @@ export default function OrthopedicPage() {
                                 </span>
                             </h2>
                         </div>
-                        <p className="text-[15px] md:text-[16px] text-gray-300 font-medium leading-[1.7] break-keep max-w-[500px] mx-auto opacity-90 mt-6">
-                            MRI는 뛰어난 검사 장비이지만, 무릎 관절 내부의 아주 미세한 연골 손상, 얇게 찢어진 인대, 슬개골의 어긋남, 혹은 관절 내 떠돌아다니는 작은 이물질(유리체) 등은 영상의학적 검사만으로는 명확히 잡아내기 어려울 수 있습니다.
+                        <p className="text-[15px] md:text-[16px] text-gray-300 font-medium leading-[1.7] break-keep max-w-[500px] mx-auto opacity-90 mt-6 text-left md:text-center">
+                            MRI는 뛰어난 검사 장비이지만,<br className="block sm:hidden" />
+                            무릎 관절 내부의 아주 미세한 연골 손상,<br />
+                            얇게 찢어진 인대, 슬개골의 어긋남,<br />
+                            혹은 관절 내 떠돌아다니는 작은 이물질(유리체) 등은<br />
+                            영상의학적 검사만으로는 명확히 잡아내기 어려울 수 있습니다.
                         </p>
                     </div>
 
@@ -725,7 +735,7 @@ export default function OrthopedicPage() {
                     {/* 브릿지 카피 */}
                     <div className={`w-full max-w-[500px] mt-10 bg-gradient-to-r from-teal-800/50 via-teal-700/50 to-teal-800/50 p-5 rounded-2xl border border-teal-400/20 text-center transition-all duration-1000 delay-400 ease-out transform ${problemVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                         <p className="text-[15px] md:text-[16px] leading-[1.65] text-white break-keep opacity-95">
-                            이것이 바로 검사 결과와 환자가 느끼는 통증 사이에<br />
+                            이것이 바로 검사 결과와<br className="block sm:hidden" /> 환자가 느끼는 통증 사이에<br />
                             <span className="text-emerald-300 font-extrabold">&apos;차이가 발생하는 이유&apos;</span>입니다.
                         </p>
                     </div>
@@ -896,7 +906,7 @@ export default function OrthopedicPage() {
                             },
                             {
                                 icon: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7"><path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>,
-                                title: '관절 속 찌꺼기 청소로 통증의 원인을 씻어냅니다',
+                                title: '관절 속 찌꺼기 세척 및 통증 원인 제거',
                                 desc: '퇴행성 관절염으로 인해 연골 부스러기들이 무릎 속을 떠다니며 염증과 통증을 유발합니다. 관절내시경은 병변을 확인하는 동시에, 맑은 식염수를 순환시켜 이러한 찌꺼기들을 깨끗하게 씻어내는 \'세척 치료\'가 동시에 가능하여 시술 후 즉각적인 통증 감소와 부드러운 움직임을 되찾아 줍니다.',
                                 color: 'emerald'
                             },
@@ -931,6 +941,73 @@ export default function OrthopedicPage() {
                         ))}
                     </div>
 
+                </section>
+
+                {/* ===== 섹션 3-B: 치료 전후 비교 (Before & After) ===== */}
+                <section ref={baRef} className="w-full bg-white pt-6 pb-20 px-5 flex flex-col items-center relative z-10">
+                    <div className={`text-center font-pretendard mb-8 transition-all duration-1000 ease-out transform ${baVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+                        <p className="text-teal-600 font-bold text-[14px] tracking-widest uppercase mb-3">Before &amp; After</p>
+                        <h2 className="text-[26px] md:text-[30px] font-extrabold leading-[1.35] tracking-[-0.02em] text-black">
+                            굽혀지지 않던 무릎,<br />치료 후 눈으로 확인된 변화
+                        </h2>
+                        <p className="text-[14px] text-gray-500 mt-3">실제 관절내시경 치료 환자의 치료 전후 모습입니다</p>
+                    </div>
+
+                    <div className="w-full max-w-[480px] flex flex-col items-center">
+                        {/* BEFORE */}
+                        <div className={`w-full transition-all duration-1000 ease-out transform ${baVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: '150ms' }}>
+                            <div className="relative rounded-2xl overflow-hidden shadow-[0_8px_28px_rgba(0,0,0,0.12)] border border-gray-200">
+                                <Image
+                                    src="/images/knee-before.jpg"
+                                    alt="치료 전 - 무릎이 끝까지 굽혀지지 않는 모습"
+                                    width={1400}
+                                    height={918}
+                                    className="w-full h-auto block"
+                                />
+                                <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 bg-gray-900/75 backdrop-blur-sm px-3.5 py-1.5 rounded-full">
+                                    <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+                                    <span className="text-white text-[12px] font-extrabold tracking-widest">BEFORE · 치료 전</span>
+                                </div>
+                                <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"></div>
+                                <p className="absolute bottom-3 left-0 right-0 text-center text-white text-[13px] md:text-[15px] font-bold tracking-tight px-4 break-keep">
+                                    무릎이 끝까지 굽혀지지 않았습니다
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* 전환 화살표 */}
+                        <div className={`flex flex-col items-center py-5 transition-all duration-1000 ease-out transform ${baVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`} style={{ transitionDelay: '350ms' }}>
+                            <div className="flex items-center gap-2 bg-teal-50 border border-teal-100 px-4 py-1.5 rounded-full mb-2">
+                                <span className="text-teal-700 text-[13px] font-extrabold tracking-tight">관절내시경 치료</span>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6 text-teal-500 animate-bounce">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
+                            </svg>
+                        </div>
+
+                        {/* AFTER */}
+                        <div className={`w-full transition-all duration-1000 ease-out transform ${baVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: '500ms' }}>
+                            <div className="relative rounded-2xl overflow-hidden shadow-[0_8px_32px_rgba(13,148,136,0.25)] border-2 border-teal-400">
+                                <Image
+                                    src="/images/knee-after.jpg"
+                                    alt="치료 후 - 무릎이 완전히 굽혀지는 모습"
+                                    width={1400}
+                                    height={918}
+                                    className="w-full h-auto block"
+                                />
+                                <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 bg-teal-600/90 backdrop-blur-sm px-3.5 py-1.5 rounded-full">
+                                    <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span>
+                                    <span className="text-white text-[12px] font-extrabold tracking-widest">AFTER · 치료 후</span>
+                                </div>
+                                <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"></div>
+                                <p className="absolute bottom-3 left-0 right-0 text-center text-white text-[13px] md:text-[15px] font-bold tracking-tight px-4 break-keep">
+                                    무릎이 끝까지 완전히 굽혀집니다
+                                </p>
+                            </div>
+                        </div>
+
+                        <p className="text-[11px] text-gray-400 mt-5 text-center">※ 개인에 따라 치료 결과는 다를 수 있습니다.</p>
+                    </div>
                 </section>
 
                 {/* ===== 섹션 4: 최호 원장님 소개 ===== */}
