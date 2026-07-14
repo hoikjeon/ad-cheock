@@ -117,7 +117,6 @@ export default function MobileMain() {
     const [warningVisible, setWarningVisible] = useState(false);
     const [pageLoaded, setPageLoaded] = useState(false);
     const [parallaxOffset, setParallaxOffset] = useState(0);
-    const [sliderPos, setSliderPos] = useState(50);
     const [countUpValues, setCountUpValues] = useState({ countries: 0, doctors: 0 });
     const [countStarted, setCountStarted] = useState(false);
     const [warningTextProgress, setWarningTextProgress] = useState(0);
@@ -142,8 +141,13 @@ export default function MobileMain() {
     const warningTextRef = useRef<HTMLDivElement>(null);
     const conclusionTextRef = useRef<HTMLDivElement>(null);
     const sliderRef = useRef<HTMLDivElement>(null);
+    const sliderClipRef = useRef<HTMLDivElement>(null);
+    const sliderHandleRef = useRef<HTMLDivElement>(null);
+    const beforeLabelRef = useRef<HTMLDivElement>(null);
+    const afterLabelRef = useRef<HTMLDivElement>(null);
     const isDragging = useRef(false);
     const rafId = useRef<number | null>(null);
+    const latestClientX = useRef(0);
 
     // 페이지 로딩 애니메이션
     useEffect(() => {
@@ -367,15 +371,20 @@ export default function MobileMain() {
         };
     }, []);
 
-    // 슬라이더 드래그 핸들러 (글로벌 이벤트로 매끄러운 동작)
+    // 슬라이더 드래그 핸들러 (React 리렌더링 없이 DOM 직접 갱신으로 매끄러운 동작)
     const updateSliderFromClientX = (clientX: number) => {
+        latestClientX.current = clientX;
         if (rafId.current !== null) return;
         rafId.current = requestAnimationFrame(() => {
-            const rect = sliderRef.current?.getBoundingClientRect();
-            if (!rect) { rafId.current = null; return; }
-            const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
-            setSliderPos((x / rect.width) * 100);
             rafId.current = null;
+            const rect = sliderRef.current?.getBoundingClientRect();
+            if (!rect || rect.width === 0) return;
+            const x = Math.max(0, Math.min(latestClientX.current - rect.left, rect.width));
+            const pos = (x / rect.width) * 100;
+            if (sliderClipRef.current) sliderClipRef.current.style.clipPath = `inset(0 ${100 - pos}% 0 0)`;
+            if (sliderHandleRef.current) sliderHandleRef.current.style.left = `${pos}%`;
+            if (afterLabelRef.current) afterLabelRef.current.style.opacity = pos > 97 ? '0' : '1';
+            if (beforeLabelRef.current) beforeLabelRef.current.style.opacity = pos < 3 ? '0' : '1';
         });
     };
 
@@ -806,27 +815,29 @@ export default function MobileMain() {
                                 }}
                             >
                                 {/* 후 (배경) */}
-                                <Image src="/images/spine2.png" alt="내시경 감압술 후" fill className="object-contain md:object-cover" style={{ objectPosition: 'center 15%' }} />
-                                <div 
+                                <Image src="/images/spine2.jpg" alt="내시경 감압술 후" fill className="object-contain md:object-cover" style={{ objectPosition: 'center 15%' }} />
+                                <div
+                                    ref={afterLabelRef}
                                     className="absolute top-3 right-3 bg-[#00c73c] text-white text-[13px] font-bold px-3 py-1 rounded-full z-20 shadow transition-opacity duration-300"
-                                    style={{ opacity: sliderPos > 97 ? 0 : 1 }}
+                                    style={{ opacity: 1 }}
                                 >
                                     수술 후
                                 </div>
 
                                 {/* 전 (오버레이 - clip) */}
-                                <div className="absolute inset-0 z-10" style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}>
-                                    <Image src="/images/spine1.png" alt="내시경 감압술 전" fill className="object-contain md:object-cover" />
-                                    <div 
+                                <div ref={sliderClipRef} className="absolute inset-0 z-10" style={{ clipPath: 'inset(0 50% 0 0)' }}>
+                                    <Image src="/images/spine1.jpg" alt="내시경 감압술 전" fill className="object-contain md:object-cover" />
+                                    <div
+                                        ref={beforeLabelRef}
                                         className="absolute top-3 left-3 bg-[#dc2626] text-white text-[13px] font-bold px-3 py-1 rounded-full shadow transition-opacity duration-300"
-                                        style={{ opacity: sliderPos < 3 ? 0 : 1 }}
+                                        style={{ opacity: 1 }}
                                     >
                                         수술 전
                                     </div>
                                 </div>
 
                                 {/* 슬라이더 핸들 (가운데 위치한 흰색 선) */}
-                                <div className="absolute top-0 bottom-0 z-20 flex items-center pointer-events-none" style={{ left: `${sliderPos}%`, transform: 'translateX(-50%)' }}>
+                                <div ref={sliderHandleRef} className="absolute top-0 bottom-0 z-20 flex items-center pointer-events-none" style={{ left: '50%', transform: 'translateX(-50%)' }}>
                                     <div className="w-[3px] h-full bg-white shadow-lg"></div>
                                 </div>
                             </div>
