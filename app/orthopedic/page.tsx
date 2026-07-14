@@ -80,6 +80,17 @@ const COLLECTION_POLICY = `개인정보 수집 및 이용에 대한 동의
 
 ※ 위 개인정보는 연세척병원에서 제공하는 서비스를 이용하기 위해 필요한 최소한의 정보이므로 동의를 해주셔야만 원활한 서비스 이용이 가능합니다.`;
 
+const diseaseImagePaths = [
+    '/images/disease-chondromalacia-patella.jpg',
+    '/images/disease-meniscus-tear.jpg',
+    '/images/disease-acl-pcl-injury.jpg',
+    '/images/disease-cartilage-damage.jpg',
+    '/images/disease-plica-syndrome.jpg',
+    '/images/disease-synovitis.jpg',
+    '/images/disease-loose-body.jpg',
+    '/images/disease-synovial-biopsy.jpg',
+] as const;
+
 export default function OrthopedicPage() {
 
     const [showBottomNav, setShowBottomNav] = useState(false);
@@ -134,6 +145,15 @@ export default function OrthopedicPage() {
         const timer = setTimeout(() => setPageLoaded(true), 800);
         return () => clearTimeout(timer);
     }, []);
+
+    useEffect(() => {
+        if (!problemVisible) return;
+
+        diseaseImagePaths.forEach((src) => {
+            const image = new window.Image();
+            image.src = src;
+        });
+    }, [problemVisible]);
 
     // 스크롤 연동 텍스트 효과
     useEffect(() => {
@@ -619,56 +639,56 @@ export default function OrthopedicPage() {
                             {
                                 kr: '슬개골 연골연화증', en: '슬개골 부정정렬',
                                 desc: '무릎뼈(슬개골) 연골이 물러지거나 닳는 질환과, 슬개골이 어긋나 충돌이 일어난 결과입니다. 나이와 관계없이 누구에게나 발생할 수 있습니다.',
-                                image: '/images/disease-chondromalacia-patella.png',
+                                image: '/images/disease-chondromalacia-patella.jpg',
                                 imageAlt: '슬개골 연골연화증과 슬개골 부정정렬을 보여주는 무릎 관절 일러스트',
                                 symptoms: ['무릎 앞쪽(슬개골 주변) 둔통', '계단 오르내리기, 쪼그려 앉기, 오래 앉아 있을 때 통증("영화관 증후군")', '무릎을 펴고 일어설때 통증', '무릎 앞쪽이 뻐근하고 힘이 빠지는 느낌']
                             },
                             {
                                 kr: '반월상 연골 파열', en: 'Meniscus Tear',
                                 desc: '무릎 관절 사이에 있는 초승달 모양의 연골판이 찢어지는 손상입니다. 스포츠 활동 중 무릎을 비틀거나 쪼그려 앉을 때 흔히 발생하며, 중장년층에서는 퇴행성 변화로도 생깁니다.',
-                                image: '/images/disease-meniscus-tear.png',
+                                image: '/images/disease-meniscus-tear.jpg',
                                 imageAlt: '반월상 연골 파열을 보여주는 무릎 관절 일러스트',
                                 symptoms: ['무릎 안쪽 또는 바깥쪽의 콕콕 찌르는 통증', '무릎을 굽히거나 펼 때 "뚝", "딸깍" 하는 소리(클릭음)', '갑자기 무릎이 안 펴지거나 움직임이 막히는 잠김 현상(locking)', '쪼그려 앉기, 계단 내려오기 시 통증 악화', '관절 부종 - 물이 차고 붓는다']
                             },
                             {
                                 kr: '십자인대 파열', en: 'ACL / PCL 손상',
                                 desc: '무릎 안쪽에 X자 모양으로 교차하는 두 인대가 끊어지는 손상입니다. 전방십자인대(ACL)는 점프 후 착지나 급격한 방향 전환 시, 후방십자인대(PCL)는 정강이 앞쪽에 강한 충격을 받았을 때 잘 손상됩니다.',
-                                image: '/images/disease-acl-pcl-injury.png',
+                                image: '/images/disease-acl-pcl-injury.jpg',
                                 imageAlt: '십자인대 파열과 ACL PCL 손상을 보여주는 무릎 관절 일러스트',
                                 symptoms: ['손상 순간 "퍽" 또는 "뚝" 하는 파열음', '즉각적인 심한 통증과 무릎 부종(혈관절증)', '무릎이 빠지는 느낌, 불안정감(giving way)', '계단 내려가기, 방향 전환 시 무릎이 흔들림']
                             },
                             {
                                 kr: '관절 연골 손상', en: '박리성 골연골염',
                                 desc: '관절 표면을 덮는 매끄러운 연골이 닳거나 떨어져 나가는 질환입니다. 박리성 골연골염은 연골 아래 뼈까지 함께 떨어져 조각이 관절 안을 떠다니는 상태로, 청소년기에 비교적 흔합니다.',
-                                image: '/images/disease-cartilage-damage.png',
+                                image: '/images/disease-cartilage-damage.jpg',
                                 imageAlt: '관절 연골 손상과 박리성 골연골염을 보여주는 무릎 관절 일러스트',
                                 symptoms: ['활동 시 둔한 통증, 휴식하면 완화', '관절이 자주 붓고 물이참', '떨어진 조각이 관절에 끼면 갑자기 무릎이 잠김', '"걸리는" 느낌이나 마찰음(crepitus)', '진행 시 조기 퇴행성 관절염으로 이어질 수 있음']
                             },
                             {
                                 kr: '추벽 증후군', en: 'Plica Syndrome',
                                 desc: '태아 시기에 있던 관절막의 주름(추벽)이 성인이 된 후에도 남아 두꺼워지면서 염증을 일으키는 질환입니다. 반복적인 무릎 굽힘 동작(자전거, 등산, 계단)으로 악화됩니다.',
-                                image: '/images/disease-plica-syndrome.png',
+                                image: '/images/disease-plica-syndrome.jpg',
                                 imageAlt: '추벽 증후군을 보여주는 무릎 관절 일러스트',
                                 symptoms: ['슬개골(무릎뼈) 안쪽의 통증', '무릎을 굽혔다 펼 때 "툭" 걸리는 느낌', '오래 앉아 있다 일어설 때 무릎이 뻣뻣함', '운동 후 통증과 미세한 부종', '반월상 연골 파열과 증상이 비슷해 감별이 필요']
                             },
                             {
                                 kr: '활막염', en: 'Synovitis',
                                 desc: '관절 안쪽을 덮고 있는 활막이 염증을 일으켜 관절액이 과도하게 분비되는 상태입니다. 외상, 감염, 류마티스 질환, 통풍 등 다양한 원인으로 발생합니다.',
-                                image: '/images/disease-synovitis.png',
+                                image: '/images/disease-synovitis.jpg',
                                 imageAlt: '활막염을 보여주는 무릎 관절 일러스트',
                                 symptoms: ['관절이 열감이 있고 붓는다', '움직일 때보다 가만히 있어도 둔한 통증', '다리가 무겁고 관절 운동 범위 제한', '만성화 시 활막이 두꺼워지고 색조가 변함']
                             },
                             {
                                 kr: '관절 내 유리체', en: 'Loose Body',
                                 desc: '관절 안에 떨어져 나온 연골 조각, 뼛조각, 또는 활막에서 형성된 결체조직이 자유롭게 떠다니는 상태입니다. 박리성 골연골염, 외상, 퇴행성 관절염 등이 원인입니다.',
-                                image: '/images/disease-loose-body.png',
+                                image: '/images/disease-loose-body.jpg',
                                 imageAlt: '관절 내 유리체를 보여주는 무릎 관절 일러스트',
                                 symptoms: ['갑작스럽고 예측 불가능한 무릎 잠김', '움직일 때마다 위치가 바뀌는 통증', '"무언가 굴러다니는" 느낌', '간헐적 부종', '조각이 끼는 위치에 따라 증상이 다양']
                             },
                             {
                                 kr: '활막 조직 검사', en: '류마티스·감염성 관절염',
                                 desc: '관절내시경은 진단이 모호한 관절염에서 활막을 직접 채취해 조직검사·균배양검사를 시행하는 데 사용됩니다.\n\n다양한 경우에 조직검사 가능',
-                                image: '/images/disease-synovial-biopsy.png',
+                                image: '/images/disease-synovial-biopsy.jpg',
                                 imageAlt: '활막 조직 검사와 류마티스 감염성 관절염 평가를 보여주는 무릎 관절 일러스트',
                             },
                         ];
@@ -731,6 +751,7 @@ export default function OrthopedicPage() {
                                                     alt={diseases[openDiseaseIdx].imageAlt}
                                                     fill
                                                     sizes="(max-width: 768px) 100vw, 512px"
+                                                    unoptimized
                                                     className="object-cover"
                                                 />
                                                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0f1c2e]/30 via-transparent to-transparent" />
