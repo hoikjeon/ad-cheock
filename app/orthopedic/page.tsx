@@ -991,6 +991,7 @@ export default function OrthopedicPage() {
                 </section>
 
                 {/* ===== 섹션 3-B: 치료 전후 비교 (Before & After) ===== */}
+                {false && (
                 <section ref={baRef} className="w-full bg-white pt-6 pb-20 px-5 flex flex-col items-center relative z-10">
                     <div className={`text-center font-pretendard mb-8 transition-all duration-1000 ease-out transform ${baVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                         <p className="text-teal-600 font-bold text-[14px] tracking-widest uppercase mb-3">Before &amp; After</p>
@@ -1056,6 +1057,7 @@ export default function OrthopedicPage() {
                         <p className="text-[11px] text-gray-400 mt-5 text-center">※ 개인에 따라 치료 결과는 다를 수 있습니다.</p>
                     </div>
                 </section>
+                )}
 
                 {/* ===== 섹션 4: 최호 원장님 소개 ===== */}
                 <section ref={doctorRef} className="w-full bg-[#0f172a] pt-48 md:pt-72 pb-16 md:pb-24 px-6 relative z-10 overflow-hidden">
