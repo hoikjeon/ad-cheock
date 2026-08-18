@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
+import ConsultationSuccessModal from '../components/ConsultationSuccessModal';
 
 const cartiSteps = [
     {
@@ -95,6 +96,7 @@ export default function OrthopedicPage() {
 
     const [showBottomNav, setShowBottomNav] = useState(false);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [isSuccessOpen, setIsSuccessOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
 
@@ -281,10 +283,10 @@ export default function OrthopedicPage() {
             } catch (slackError) {
                 console.error('슬랙 알림 에러:', slackError);
             }
-            alert('상담 신청이 완료되었습니다! 빠른 시일 내에 연락드리겠습니다.');
             setName(''); setPhone(''); setMemo('');
             setAgreedPrivacy(true); setAgreedCollection(true);
             setIsPopupOpen(false);
+            setIsSuccessOpen(true);
         }
         setIsSubmitting(false);
     };
@@ -1547,6 +1549,12 @@ export default function OrthopedicPage() {
                         </form>
                     </div>
                 </div>
+
+                <ConsultationSuccessModal
+                    isOpen={isSuccessOpen}
+                    onClose={() => setIsSuccessOpen(false)}
+                    variant="teal"
+                />
             </div>
         </div>
     );
