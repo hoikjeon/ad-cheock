@@ -1015,6 +1015,7 @@ export default function MobileMain() {
                 </section>
 
                 {/* --- 두 번째 섹션: 환자 후기 영상 --- */}
+                {false && (
                 <section ref={reviewRef} className="w-full bg-white pt-12 pb-16 md:pt-14 px-5 relative z-10">
                     <div className={`flex flex-col gap-6 text-center font-sans transition-all duration-1000 ease-out transform ${reviewVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                         <h2 className="text-[32px] font-bold leading-[1.35] tracking-[-0.02em] text-black">
@@ -1056,6 +1057,7 @@ export default function MobileMain() {
                         )}
                     </div>
                 </section>
+                )}
 
                 {/* --- 연세척TV 유튜브 섹션 --- */}
                 <section className="w-full bg-[#f8f9fa] pt-12 pb-16 px-5 relative z-10">
