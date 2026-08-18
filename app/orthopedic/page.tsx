@@ -373,6 +373,8 @@ export default function OrthopedicPage() {
                             src="/images/choi.jpg"
                             alt="최호 원장"
                             fill
+                            sizes="100vw"
+                            quality={85}
                             className="object-cover object-[center_15%]"
                         />
                         {/* 상단 페이드: 흰 배경과 자연스럽게 연결 */}
@@ -415,6 +417,8 @@ export default function OrthopedicPage() {
                                     src="/images/knee-1.png"
                                     alt="무릎 관절"
                                     fill
+                                    sizes="450px"
+                                    quality={85}
                                     className="object-contain"
                                 />
                                 <div className="absolute top-[10%] left-[-55px] w-[77%] h-[77%] animate-scan">
@@ -422,6 +426,8 @@ export default function OrthopedicPage() {
                                         src="/images/kneescope.png"
                                         alt="관절내시경 장비"
                                         fill
+                                        sizes="350px"
+                                        quality={85}
                                         className="object-contain drop-shadow-xl"
                                     />
                                     {/* 내시경 팁 불빛 — scaleX(-1) 후 우측에 렌더링됨 */}
@@ -1071,6 +1077,8 @@ export default function OrthopedicPage() {
                                     src="/images/cho.png"
                                     alt="최호 원장"
                                     fill
+                                    sizes="(max-width: 768px) 100vw, 700px"
+                                    quality={85}
                                     className={`object-cover object-top transition-transform duration-[5000ms] ease-out ${doctorVisible ? 'scale-110' : 'scale-100'}`}
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-transparent to-transparent opacity-80"></div>

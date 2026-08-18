@@ -560,13 +560,22 @@ export default function MobileMain() {
                             style={{ transform: `translateY(${parallaxOffset}px)` }}
                         >
                             <div
-                                className="absolute inset-0 bg-cover bg-center hero-bg"
+                                className="absolute inset-0 hero-bg"
                                 style={{
-                                    backgroundImage: `url('${src}')`,
                                     animation: `kenburns-${idx} 8s ease-in-out infinite alternate`,
                                     willChange: 'transform',
                                 }}
-                            />
+                            >
+                                <Image
+                                    src={src}
+                                    alt=""
+                                    fill
+                                    sizes="100vw"
+                                    quality={90}
+                                    priority={idx === 0}
+                                    className="object-cover object-center"
+                                />
+                            </div>
                         </div>
                     ))}
                     <div className="absolute inset-0 bg-black/65 z-0 pointer-events-none"></div>
@@ -1171,7 +1180,7 @@ export default function MobileMain() {
                                 {Array.from({ length: slideCount }, (_, i) => i + 1).map((num) => (
                                     <div key={`set1-${num}`} className="w-[80vw] max-w-[280px] shrink-0 border border-gray-100 rounded-2xl overflow-hidden bg-white shadow-sm flex flex-col">
                                         <div className="w-full aspect-[4/5] relative">
-                                            <Image src={`/images/slide${num}.jpg`} alt={`교육 및 세미나 모습 ${num}`} fill className="absolute inset-0 w-full h-full object-cover" />
+                                            <Image src={`/images/slide${num}.jpg`} alt={`교육 및 세미나 모습 ${num}`} fill sizes="420px" quality={85} className="absolute inset-0 w-full h-full object-cover" />
                                         </div>
                                     </div>
                                 ))}
@@ -1181,7 +1190,7 @@ export default function MobileMain() {
                                 {Array.from({ length: slideCount }, (_, i) => i + 1).map((num) => (
                                     <div key={`set2-${num}`} className="w-[80vw] max-w-[280px] shrink-0 border border-gray-100 rounded-2xl overflow-hidden bg-white shadow-sm flex flex-col">
                                         <div className="w-full aspect-[4/5] relative">
-                                            <Image src={`/images/slide${num}.jpg`} alt={`교육 및 세미나 모습 ${num}`} fill className="absolute inset-0 w-full h-full object-cover" />
+                                            <Image src={`/images/slide${num}.jpg`} alt={`교육 및 세미나 모습 ${num}`} fill sizes="420px" quality={85} className="absolute inset-0 w-full h-full object-cover" />
                                         </div>
                                     </div>
                                 ))}
@@ -1294,7 +1303,7 @@ export default function MobileMain() {
                                 {Array.from({ length: sympoCount }, (_, i) => i + 1).map((num) => (
                                     <div key={`sympo-set1-${num}`} className="w-[240px] shrink-0 border border-gray-100 rounded-2xl overflow-hidden bg-white shadow-sm flex flex-col">
                                         <div className="w-full aspect-[4/5] relative bg-gray-100">
-                                            <Image src={`/images/sympo${num}.jpg`} alt={`학술 심포지엄 모습 ${num}`} fill className="absolute inset-0 w-full h-full object-cover" />
+                                            <Image src={`/images/sympo${num}.jpg`} alt={`학술 심포지엄 모습 ${num}`} fill sizes="360px" quality={85} className="absolute inset-0 w-full h-full object-cover" />
                                         </div>
                                     </div>
                                 ))}
@@ -1304,7 +1313,7 @@ export default function MobileMain() {
                                 {Array.from({ length: sympoCount }, (_, i) => i + 1).map((num) => (
                                     <div key={`sympo-set2-${num}`} className="w-[240px] shrink-0 border border-gray-100 rounded-2xl overflow-hidden bg-white shadow-sm flex flex-col">
                                         <div className="w-full aspect-[4/5] relative bg-gray-100">
-                                            <Image src={`/images/sympo${num}.jpg`} alt={`학술 심포지엄 모습 ${num}`} fill className="absolute inset-0 w-full h-full object-cover" />
+                                            <Image src={`/images/sympo${num}.jpg`} alt={`학술 심포지엄 모습 ${num}`} fill sizes="360px" quality={85} className="absolute inset-0 w-full h-full object-cover" />
                                         </div>
                                     </div>
                                 ))}
