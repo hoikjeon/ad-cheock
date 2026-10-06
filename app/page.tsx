@@ -4,49 +4,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
+import { POLICY_TEXTS, POLICY_TITLES, type PolicyType } from './lib/privacyPolicy';
 import ConsultationSuccessModal from './components/ConsultationSuccessModal';
 
 // Supabase 클라이언트 설정 (환경 변수 사용)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-const PRIVACY_POLICY = `개인정보취급방침 동의
-연세척병원에서는 서비스 향상을 위해서 아래와 같이 개인정보를 위탁하고 있으며, 관계 법령에 따라 위탁계약 시 개인정보가 안전하게 관리될 수 있도록 필요한 사항을 규정하고 있습니다.
-연세척병원의 개인정보 위탁처리 기관 및 위탁업무 내용은 아래와 같습니다.
-
-개인정보 수집 및 이용 수집주체 : 연세척병원
-개인정보 수집항목 : 이름, 나이, 연락처, 거주지역
-개인정보 수집 및 이용목적 : 연세척병원 상담 활용 (전화, 문자, SNS 등)
-개인정보 보유 및 이용기간 : 수집일로부터 2년 (고객 동의 철회 시 지체 없이 파기)
-개인정보 취급 위탁을 받는 자 : 연세척병원
-개인정보 취급 위탁 업무 내용 : 고객정보 저장 및 서버 관리
-
-* 상기 동의를 거부할 권리가 있으나, 수집 및 이용에 동의하지 않을 경우 상담 및 이벤트 참여가 불가능합니다.`;
-
-const COLLECTION_POLICY = `개인정보 수집 및 이용에 대한 동의
-연세척병원에서는 고객의 개인정보를 매우 소중하게 생각하며 정보주체의 권익을 보호하기 위하여 적법하고 적정하게 취급할 것입니다. 개인정보 보호법 및 동법 시행령 등 관련 법령을 준수하고 있습니다. 연세척병원은 제공하신 개인정보가 어떠한 용도와 방식으로 이용되고 있으며 개인정보 보호를 위해 어떠한 조치가 취해지고 있는지 알려드립니다.
-
-■ 수집하는 개인정보의 항목
-성명, 연락처, 지역, 추가내용(증상 등)
-
-※ 이용자의 기본적 인권 침해의 우려가 있는 민감한 개인정보(인종 및 민족, 사상 및 신조, 정치적 성향, 범죄기록 등)는 수집하지 않습니다.
-
-■ 개인정보의 수집 및 이용목적
-연세척병원에서는 개인정보를 다음의 목적 이외의 용도로는 이용하지 않으며, 이용 목적이 변경될 경우에는 별도의 동의를 받아 처리하겠습니다.
-
-전화, 문자, SNS를 이용한 서비스 상담, 이용 권유, 각종 서비스 및 이벤트 안내
-테스트 결과 안내 및 경품 전달을 위한 정보 수집
-이벤트 참가 신청, 참가 가능 여부, 당첨자 발표, 진행 사항에 대한 정보 전달
-
-■ 개인정보의 처리 및 보유기간
-수집일로부터 2년 혹은 위탁계약 종료 시 (고객 동의 철회 시 지체 없이 파기)
-불량회원 관리 및 소비자보호에 관한 법률 등 타 법률에 의해 보존해야 할 필요가 있는 경우에는 일정 기간 보존합니다.
-
-■ 동의 거부 권리 및 불이익 내용
-귀하는 연세척병원에서 수집하는 개인정보에 대해 동의를 거부할 권리가 있으며, 동의 거부 시에는 상담 및 이벤트 등의 서비스 이용이 제한됩니다.
-
-※ 위 개인정보는 연세척병원에서 제공하는 서비스를 이용하기 위해 필요한 최소한의 정보이므로 동의를 해주셔야만 원활한 서비스 이용이 가능합니다.`;
 
 export default function MobileMain() {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -92,9 +56,9 @@ export default function MobileMain() {
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [memo, setMemo] = useState('');
-    const [agreedPrivacy, setAgreedPrivacy] = useState(true);
-    const [agreedCollection, setAgreedCollection] = useState(true);
-    const [policyViewerType, setPolicyViewerType] = useState<'privacy' | 'collection' | null>(null);
+    const [agreedCollection, setAgreedCollection] = useState(false);
+    const [agreedSensitive, setAgreedSensitive] = useState(false);
+    const [policyViewerType, setPolicyViewerType] = useState<PolicyType | null>(null);
 
     // 슬라이드 이미지 개수 (특별한 이유 섹션 1)
     const slideCount = 6;
@@ -438,7 +402,7 @@ export default function MobileMain() {
             return;
         }
 
-        if (!agreedPrivacy || !agreedCollection) {
+        if (!agreedCollection || !agreedSensitive) {
             alert('개인정보 수집 및 이용에 동의해주세요.');
             return;
         }
@@ -474,8 +438,8 @@ export default function MobileMain() {
             setName('');
             setPhone('');
             setMemo('');
-            setAgreedPrivacy(true);
-            setAgreedCollection(true);
+            setAgreedCollection(false);
+            setAgreedSensitive(false);
             setIsPopupOpen(false);
             setIsSuccessOpen(true);
         }
@@ -1703,6 +1667,13 @@ export default function MobileMain() {
                     </div>
                 </section>
 
+                {/* --- 푸터: 개인정보처리방침 --- */}
+                <footer className="w-full bg-white py-8 px-6 text-center">
+                    <Link href="/privacy" className="text-[13px] font-bold text-gray-500 hover:text-gray-800 transition-colors">
+                        개인정보처리방침
+                    </Link>
+                </footer>
+
                 {/* --- 하단 고정 버튼 (스크롤 시 활성화되어 상담 팝업창을 엽니다) --- */}
                 <div className={`fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[640px] bg-white border-t border-gray-200 py-4 px-6 z-40 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] transition-transform duration-500 ease-in-out ${showBottomNav ? 'translate-y-0' : 'translate-y-full'}`}>
                     <button
@@ -1729,7 +1700,7 @@ export default function MobileMain() {
                             <div className="absolute inset-0 bg-white z-[60] flex flex-col animate-in slide-in-from-right duration-300">
                                 <div className="flex justify-between items-center px-6 py-5 border-b border-gray-100">
                                     <h3 className="font-bold text-lg text-gray-800">
-                                        {policyViewerType === 'privacy' ? '개인정보취급방침' : '개인정보 수집 및 이용 동의'}
+                                        {POLICY_TITLES[policyViewerType]}
                                     </h3>
                                     <button onClick={() => setPolicyViewerType(null)} className="text-gray-400 hover:text-gray-800 p-2 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1738,7 +1709,7 @@ export default function MobileMain() {
                                     </button>
                                 </div>
                                 <div className="flex-1 overflow-y-auto p-6 text-[14px] text-gray-600 leading-relaxed whitespace-pre-wrap font-pretendard">
-                                    {policyViewerType === 'privacy' ? PRIVACY_POLICY : COLLECTION_POLICY}
+                                    {POLICY_TEXTS[policyViewerType]}
                                 </div>
                                 <div className="p-4 border-t border-gray-100">
                                     <button 
@@ -1796,44 +1767,44 @@ export default function MobileMain() {
                                 <div className="flex items-center justify-between">
                                     <div 
                                         className="flex items-center gap-2 cursor-pointer group"
-                                        onClick={() => setAgreedPrivacy(!agreedPrivacy)}
-                                    >
-                                        <div className={`w-[22px] h-[22px] rounded border flex items-center justify-center transition-all ${agreedPrivacy ? 'bg-blue-600 border-blue-600 shadow-sm' : 'bg-white border-gray-300'}`}>
-                                            {agreedPrivacy && (
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                                </svg>
-                                            )}
-                                        </div>
-                                        <span className="text-[15px] font-medium text-gray-600 group-hover:text-gray-900 transition-colors">개인정보취급방침 동의</span>
-                                    </div>
-                                    <button 
-                                        type="button" 
-                                        onClick={() => setPolicyViewerType('privacy')}
-                                        className="text-[13px] text-gray-400 hover:text-blue-600 transition-colors"
-                                    >
-                                        &lt;자세히보기&gt;
-                                    </button>
-                                </div>
-
-                                <div className="flex items-center justify-between">
-                                    <div 
-                                        className="flex items-center gap-2 cursor-pointer group"
                                         onClick={() => setAgreedCollection(!agreedCollection)}
                                     >
-                                        <div className={`w-[22px] h-[22px] rounded border flex items-center justify-center transition-all ${agreedCollection ? 'bg-blue-600 border-blue-600 shadow-sm' : 'bg-white border-gray-300'}`}>
+                                        <div className={`shrink-0 w-[22px] h-[22px] rounded border flex items-center justify-center transition-all ${agreedCollection ? 'bg-blue-600 border-blue-600 shadow-sm' : 'bg-white border-gray-300'}`}>
                                             {agreedCollection && (
                                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor">
                                                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                                 </svg>
                                             )}
                                         </div>
-                                        <span className="text-[15px] font-medium text-gray-600 group-hover:text-gray-900 transition-colors">개인정보 수집 및 이용에 대한 동의</span>
+                                        <span className="text-[15px] font-medium text-gray-600 group-hover:text-gray-900 transition-colors">[필수] 개인정보 수집 및 이용 동의</span>
                                     </div>
                                     <button 
                                         type="button" 
                                         onClick={() => setPolicyViewerType('collection')}
-                                        className="text-[13px] text-gray-400 hover:text-blue-600 transition-colors"
+                                        className="shrink-0 whitespace-nowrap text-[13px] text-gray-400 hover:text-blue-600 transition-colors"
+                                    >
+                                        &lt;자세히보기&gt;
+                                    </button>
+                                </div>
+
+                                <div className="flex items-center justify-between">
+                                    <div
+                                        className="flex items-center gap-2 cursor-pointer group"
+                                        onClick={() => setAgreedSensitive(!agreedSensitive)}
+                                    >
+                                        <div className={`shrink-0 w-[22px] h-[22px] rounded border flex items-center justify-center transition-all ${agreedSensitive ? 'bg-blue-600 border-blue-600 shadow-sm' : 'bg-white border-gray-300'}`}>
+                                            {agreedSensitive && (
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                </svg>
+                                            )}
+                                        </div>
+                                        <span className="text-[15px] font-medium text-gray-600 group-hover:text-gray-900 transition-colors">[필수] 민감정보(건강정보) 처리 동의</span>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setPolicyViewerType('sensitive')}
+                                        className="shrink-0 whitespace-nowrap text-[13px] text-gray-400 hover:text-blue-600 transition-colors"
                                     >
                                         &lt;자세히보기&gt;
                                     </button>
