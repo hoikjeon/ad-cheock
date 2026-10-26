@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import './globals.css';
 import { Analytics } from "@vercel/analytics/next"
 
@@ -18,7 +19,9 @@ export default function RootLayout({
     return (
         <html lang="ko" className="font-sans">
             <head>
-                <script
+                <Script
+                    id="adobe-typekit"
+                    strategy="afterInteractive"
                     dangerouslySetInnerHTML={{
                         __html: `
                             (function(d) {
@@ -32,7 +35,9 @@ export default function RootLayout({
                         `
                     }}
                 />
-                <script
+                <Script
+                    id="google-tag-manager"
+                    strategy="afterInteractive"
                     dangerouslySetInnerHTML={{
                         __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -41,8 +46,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-P4DZPL3Z');`
                     }}
                 />
-                <script async src="https://www.googletagmanager.com/gtag/js?id=G-JB2HGB54DT" />
-                <script
+                <Script strategy="afterInteractive" src="https://www.googletagmanager.com/gtag/js?id=G-JB2HGB54DT" />
+                <Script
+                    id="google-analytics-config"
+                    strategy="afterInteractive"
                     dangerouslySetInnerHTML={{
                         __html: `window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}

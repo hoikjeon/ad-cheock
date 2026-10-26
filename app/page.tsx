@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
 import { POLICY_TEXTS, POLICY_TITLES, type PolicyType } from './lib/privacyPolicy';
 import ConsultationSuccessModal from './components/ConsultationSuccessModal';
+import SpineWarningSection from './components/SpineWarningSection';
 
 // Supabase 클라이언트 설정 (환경 변수 사용)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -24,13 +25,25 @@ export default function MobileMain() {
     const [activeYtIndex, setActiveYtIndex] = useState(0);
     const ytCarouselRef = useRef<HTMLDivElement>(null);
 
+    const getYtItemWidth = () => {
+        const item = ytCarouselRef.current?.querySelector<HTMLElement>('.yt-carousel > div');
+        return item?.offsetWidth || 335;
+    };
+
     const handleYtScroll = () => {
         const el = ytCarouselRef.current;
         if (!el) return;
         const scrollLeft = el.scrollLeft;
-        const itemWidth = 335;
-        const index = Math.round(scrollLeft / itemWidth);
+        const index = Math.round(scrollLeft / getYtItemWidth());
         setActiveYtIndex(Math.min(index, 6));
+    };
+
+    // 좌우 버튼으로 영상 이동
+    const scrollYtTo = (index: number) => {
+        const el = ytCarouselRef.current;
+        if (!el) return;
+        const target = Math.max(0, Math.min(index, 6));
+        el.scrollTo({ left: target * getYtItemWidth(), behavior: 'smooth' });
     };
 
     const books = [
@@ -108,7 +121,9 @@ export default function MobileMain() {
     const conclusionTextRef = useRef<HTMLDivElement>(null);
     const sliderRef = useRef<HTMLDivElement>(null);
     const sliderClipRef = useRef<HTMLDivElement>(null);
+    const sliderClipInnerRef = useRef<HTMLDivElement>(null);
     const sliderHandleRef = useRef<HTMLDivElement>(null);
+    const sliderRect = useRef<DOMRect | null>(null);
     const beforeLabelRef = useRef<HTMLDivElement>(null);
     const afterLabelRef = useRef<HTMLDivElement>(null);
     const isDragging = useRef(false);
@@ -337,53 +352,42 @@ export default function MobileMain() {
         };
     }, []);
 
-    // 슬라이더 드래그 핸들러 (React 리렌더링 없이 DOM 직접 갱신으로 매끄러운 동작)
+    // 슬라이더 드래그 핸들러 (transform만 갱신 → GPU 합성으로 리페인트 없이 매끄럽게 동작)
     const updateSliderFromClientX = (clientX: number) => {
         latestClientX.current = clientX;
         if (rafId.current !== null) return;
         rafId.current = requestAnimationFrame(() => {
             rafId.current = null;
-            const rect = sliderRef.current?.getBoundingClientRect();
+            const rect = sliderRect.current;
             if (!rect || rect.width === 0) return;
             const x = Math.max(0, Math.min(latestClientX.current - rect.left, rect.width));
             const pos = (x / rect.width) * 100;
-            if (sliderClipRef.current) sliderClipRef.current.style.clipPath = `inset(0 ${100 - pos}% 0 0)`;
-            if (sliderHandleRef.current) sliderHandleRef.current.style.left = `${pos}%`;
+            const offset = 100 - pos;
+            if (sliderClipRef.current) sliderClipRef.current.style.transform = `translate3d(-${offset}%,0,0)`;
+            if (sliderClipInnerRef.current) sliderClipInnerRef.current.style.transform = `translate3d(${offset}%,0,0)`;
+            if (sliderHandleRef.current) sliderHandleRef.current.style.transform = `translate3d(-${offset}%,0,0)`;
             if (afterLabelRef.current) afterLabelRef.current.style.opacity = pos > 97 ? '0' : '1';
             if (beforeLabelRef.current) beforeLabelRef.current.style.opacity = pos < 3 ? '0' : '1';
         });
     };
 
+    const handleSliderPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        isDragging.current = true;
+        sliderRect.current = e.currentTarget.getBoundingClientRect();
+        e.currentTarget.setPointerCapture(e.pointerId);
+        updateSliderFromClientX(e.clientX);
+    };
+    const handleSliderPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+        if (!isDragging.current) return;
+        updateSliderFromClientX(e.clientX);
+    };
+    const handleSliderPointerEnd = () => {
+        isDragging.current = false;
+    };
+
     useEffect(() => {
-        const handleMouseMove = (e: MouseEvent) => {
-            if (!isDragging.current) return;
-            e.preventDefault();
-            updateSliderFromClientX(e.clientX);
-        };
-        const handleMouseUp = () => {
-            isDragging.current = false;
-            document.body.style.userSelect = '';
-            document.body.style.cursor = '';
-        };
-        const handleTouchMove = (e: TouchEvent) => {
-            if (!isDragging.current) return;
-            e.preventDefault();
-            updateSliderFromClientX(e.touches[0].clientX);
-        };
-        const handleTouchEnd = () => {
-            isDragging.current = false;
-        };
-
-        window.addEventListener('mousemove', handleMouseMove);
-        window.addEventListener('mouseup', handleMouseUp);
-        window.addEventListener('touchmove', handleTouchMove, { passive: false });
-        window.addEventListener('touchend', handleTouchEnd);
-
         return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('mouseup', handleMouseUp);
-            window.removeEventListener('touchmove', handleTouchMove);
-            window.removeEventListener('touchend', handleTouchEnd);
             if (rafId.current !== null) cancelAnimationFrame(rafId.current);
         };
     }, []);
@@ -565,15 +569,15 @@ export default function MobileMain() {
                                 <span className="font-extrabold text-[20px]">N</span>
                                 네이버 예약
                             </Link>
-                            <Link href="https://m.ys-cheok.com/001/004_4.php#doctorProfile" target="_blank" className="w-full bg-[#EAEAEA] hover:bg-gray-200 text-[#0d6efd] text-center py-4 rounded-2xl font-bold text-[18px] shadow-lg transition-colors cursor-pointer relative z-30">
+                            <Link href="https://www.ys-cheok.com/doctors" target="_blank" className="w-full bg-[#EAEAEA] hover:bg-gray-200 text-[#0d6efd] text-center py-4 rounded-2xl font-bold text-[18px] shadow-lg transition-colors cursor-pointer relative z-30">
                                 의료진 바로보기
                             </Link>
                         </div>
                     </div>
                 </div>
 
-                {/* --- 척추 수술 위험 신호 경고 섹션 --- */}
-                <section ref={warningRef} className="w-full bg-[#1b2330] pt-16 pb-16 px-5 flex flex-col items-center justify-center relative z-10 overflow-hidden text-white">
+                {/* --- 기존 척추 수술 위험 신호 경고 섹션 (숨김) --- */}
+                <section hidden ref={warningRef} className="!hidden w-full bg-[#1b2330] pt-16 pb-16 px-5 flex flex-col items-center justify-center relative z-10 overflow-hidden text-white">
                     {/* 상단 메인 카피 & 서브 카피 */}
                     <div className={`text-center transition-all duration-1000 ease-out transform ${warningVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                         <div className="inline-flex items-center justify-center bg-red-600/20 border border-red-500/30 px-4 py-1.5 rounded-full mb-5">
@@ -687,6 +691,8 @@ export default function MobileMain() {
                     </div>
                 </section>
 
+                <SpineWarningSection />
+
                 {/* --- 최소침습 양방향 척추내시경 섹션 --- */}
                 <section className="w-full bg-white pt-16 pb-10 px-5 flex flex-col items-center justify-center text-center relative z-10 overflow-hidden">
                     <div ref={catchphraseRef} className={`font-pretendard font-extrabold text-[#294f7e] flex flex-col items-center gap-1 transition-opacity duration-1000 ease-in relative z-20 ${catchphraseVisible ? 'opacity-100' : 'opacity-0'}`}>
@@ -777,43 +783,41 @@ export default function MobileMain() {
                             {/* 인터랙티브 비교 슬라이더 */}
                             <div
                                 ref={sliderRef}
-                                className="relative w-full max-w-[400px] aspect-[4/5] mt-6 mx-auto rounded-xl overflow-hidden shadow-lg border border-gray-200 cursor-col-resize select-none touch-none"
-                                onMouseDown={(e) => {
-                                    isDragging.current = true;
-                                    document.body.style.userSelect = 'none';
-                                    document.body.style.cursor = 'col-resize';
-                                    updateSliderFromClientX(e.clientX);
-                                }}
-                                onTouchStart={(e) => {
-                                    isDragging.current = true;
-                                    updateSliderFromClientX(e.touches[0].clientX);
-                                }}
+                                className="relative w-full max-w-[400px] aspect-[4/5] mt-6 mx-auto rounded-xl overflow-hidden shadow-lg border border-gray-200 cursor-col-resize select-none"
+                                style={{ touchAction: 'pan-y', isolation: 'isolate' }}
+                                onPointerDown={handleSliderPointerDown}
+                                onPointerMove={handleSliderPointerMove}
+                                onPointerUp={handleSliderPointerEnd}
+                                onPointerCancel={handleSliderPointerEnd}
+                                onDragStart={(e) => e.preventDefault()}
                             >
                                 {/* 후 (배경) */}
-                                <Image src="/images/spine2.jpg" alt="내시경 감압술 후" fill className="object-contain md:object-cover" style={{ objectPosition: 'center 15%' }} />
+                                <Image src="/images/spine2.jpg" alt="내시경 감압술 후" fill draggable={false} className="object-contain md:object-cover pointer-events-none" style={{ objectPosition: 'center 15%' }} />
                                 <div
                                     ref={afterLabelRef}
-                                    className="absolute top-3 right-3 bg-[#00c73c] text-white text-[13px] font-bold px-3 py-1 rounded-full z-20 shadow transition-opacity duration-300"
+                                    className="absolute top-3 right-3 bg-[#00c73c] text-white text-[13px] font-bold px-3 py-1 rounded-full z-20 shadow transition-opacity duration-300 pointer-events-none"
                                     style={{ opacity: 1 }}
                                 >
                                     수술 후
                                 </div>
 
-                                {/* 전 (오버레이 - clip) */}
-                                <div ref={sliderClipRef} className="absolute inset-0 z-10" style={{ clipPath: 'inset(0 50% 0 0)' }}>
-                                    <Image src="/images/spine1.jpg" alt="내시경 감압술 전" fill className="object-contain md:object-cover" />
-                                    <div
-                                        ref={beforeLabelRef}
-                                        className="absolute top-3 left-3 bg-[#dc2626] text-white text-[13px] font-bold px-3 py-1 rounded-full shadow transition-opacity duration-300"
-                                        style={{ opacity: 1 }}
-                                    >
-                                        수술 전
+                                {/* 전 (오버레이 - 바깥은 왼쪽으로, 안쪽은 반대로 이동시켜 이미지는 고정된 채 잘림 효과) */}
+                                <div ref={sliderClipRef} className="absolute inset-0 z-10 overflow-hidden pointer-events-none" style={{ transform: 'translate3d(-50%,0,0)', willChange: 'transform' }}>
+                                    <div ref={sliderClipInnerRef} className="absolute inset-0" style={{ transform: 'translate3d(50%,0,0)', willChange: 'transform' }}>
+                                        <Image src="/images/spine1.jpg" alt="내시경 감압술 전" fill draggable={false} className="object-contain md:object-cover" />
+                                        <div
+                                            ref={beforeLabelRef}
+                                            className="absolute top-3 left-3 bg-[#dc2626] text-white text-[13px] font-bold px-3 py-1 rounded-full shadow transition-opacity duration-300"
+                                            style={{ opacity: 1 }}
+                                        >
+                                            수술 전
+                                        </div>
                                     </div>
                                 </div>
 
                                 {/* 슬라이더 핸들 (가운데 위치한 흰색 선) */}
-                                <div ref={sliderHandleRef} className="absolute top-0 bottom-0 z-20 flex items-center pointer-events-none" style={{ left: '50%', transform: 'translateX(-50%)' }}>
-                                    <div className="w-[3px] h-full bg-white shadow-lg"></div>
+                                <div ref={sliderHandleRef} className="absolute inset-0 z-20 pointer-events-none" style={{ transform: 'translate3d(-50%,0,0)', willChange: 'transform' }}>
+                                    <div className="absolute top-0 bottom-0 right-0 w-[3px] translate-x-1/2 bg-white shadow-lg"></div>
                                 </div>
                             </div>
                             <p className="mt-4 text-[14px] text-gray-500 font-medium text-center">← 좌우로 드래그하여 비교해보세요 →</p>
@@ -1039,17 +1043,36 @@ export default function MobileMain() {
                         </Link>
 
                         {/* 제목 */}
-                        <h2 className="text-[28px] md:text-[32px] font-bold leading-[1.35] tracking-[-0.02em] text-black mb-3">
+                        <h2 className="text-[28px] md:text-[32px] font-bold leading-[1.35] tracking-[-0.02em] text-black mb-8">
                             다양한 치료에 대한 설명을<br />영상으로 확인하세요
                         </h2>
-
-                        {/* 부제 */}
-                        <p className="text-base font-semibold leading-[1.4] tracking-[-0.02em] text-[#727582] mb-8">
-                            실제 치료사례와 치료후기
-                        </p>
                     </div>
 
                     {/* 영상 목록 - 가로 스와이프 캐러셀 */}
+                    <div className="relative">
+                    {/* 좌우 이동 버튼 */}
+                    <button
+                        type="button"
+                        aria-label="이전 영상"
+                        onClick={() => scrollYtTo(activeYtIndex - 1)}
+                        disabled={activeYtIndex === 0}
+                        className="absolute left-1 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-[#3b609c] hover:bg-white transition-opacity disabled:opacity-0 disabled:pointer-events-none"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                            <path d="M15 18l-6-6 6-6" />
+                        </svg>
+                    </button>
+                    <button
+                        type="button"
+                        aria-label="다음 영상"
+                        onClick={() => scrollYtTo(activeYtIndex + 1)}
+                        disabled={activeYtIndex === 6}
+                        className="absolute right-1 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-[#3b609c] hover:bg-white transition-opacity disabled:opacity-0 disabled:pointer-events-none"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                            <path d="M9 18l6-6-6-6" />
+                        </svg>
+                    </button>
                     <div ref={ytCarouselRef} onScroll={handleYtScroll} className="w-full overflow-x-auto snap-x snap-mandatory" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}>
                         <style dangerouslySetInnerHTML={{
                             __html: `
@@ -1097,6 +1120,7 @@ export default function MobileMain() {
                                 </div>
                             ))}
                         </div>
+                    </div>
                     </div>
 
                     {/* 스와이프 인디케이터 */}

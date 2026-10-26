@@ -285,9 +285,9 @@ export default function OrthopedicPage() {
                                     <span className="text-teal-400 font-extrabold underline decoration-2 underline-offset-8 decoration-teal-500/50">&apos;진단 방법&apos;을 바꿔야 할 때</span>입니다.
                                 </p>
                             </div>
-                            <div className="w-[120px] md:w-[170px] shrink-0 animate-float relative mt-4 md:mt-0">
+                            <div className="w-[120px] md:w-[170px] aspect-[3/5] shrink-0 animate-float relative mt-4 md:mt-0">
                                 <div className="absolute inset-[-20%] bg-teal-400/25 blur-[60px] rounded-full"></div>
-                                <Image src="/images/knee-3d.png" alt="무릎 관절 이미지" width={500} height={500} className="object-contain relative z-10 drop-shadow-[0_20px_60px_rgba(13,148,136,0.5)]" />
+                                <Image src="/images/knee-3d-mirrored-transparent.png" alt="무릎 관절의 뼈와 연골을 표현한 3D 이미지" fill sizes="(min-width: 768px) 170px, 120px" priority className="object-cover z-10 [mask-image:linear-gradient(to_bottom,transparent,black_8%,black_88%,transparent)]" />
                             </div>
                         </div>
                     </div>
