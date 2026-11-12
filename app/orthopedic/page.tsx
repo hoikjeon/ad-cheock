@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
 import { POLICY_TEXTS, POLICY_TITLES, type PolicyType } from '../lib/privacyPolicy';
 import ConsultationSuccessModal from '../components/ConsultationSuccessModal';
+import VisitTracker from '../components/VisitTracker';
+import { track } from '../lib/track';
 
 const cartiSteps = [
     {
@@ -228,6 +230,7 @@ export default function OrthopedicPage() {
         if (!agreedCollection || !agreedSensitive) { alert('개인정보 수집 및 이용에 동의해주세요.'); return; }
         if (isSubmitting) return;
         setIsSubmitting(true);
+        track('step', 'submit');
 
         const { error: dbError } = await supabase
             .from('consultations')
@@ -251,19 +254,21 @@ export default function OrthopedicPage() {
             setAgreedCollection(false); setAgreedSensitive(false);
             setIsPopupOpen(false);
             setIsSuccessOpen(true);
+            track('step', 'complete');
         }
         setIsSubmitting(false);
     };
 
     return (
         <div className="relative min-h-screen bg-gray-900 font-sans flex justify-center">
+            <VisitTracker page="ortho" />
             {/* 페이지 로딩 프로그레스 바 */}
             <div className={`fixed top-0 left-0 h-[3px] bg-gradient-to-r from-teal-500 via-teal-400 to-emerald-400 z-[100] transition-all duration-1000 ease-out ${pageLoaded ? 'w-full opacity-0' : 'w-[70%] opacity-100'}`}></div>
 
             <div className="w-full max-w-[640px] bg-white relative pb-32 shadow-2xl overflow-x-hidden min-h-screen">
 
                 {/* ===== 섹션 1: 히어로 Hook (도입부) ===== */}
-                <section ref={hookRef} className={`w-full bg-[#0f172a] pt-14 pb-20 px-6 relative z-20 overflow-hidden transition-all duration-[1200ms] ease-out transform ${hookVisible ? 'opacity-100' : 'opacity-0'}`}>
+                <section data-track-section="hook" ref={hookRef} className={`w-full bg-[#0f172a] pt-14 pb-20 px-6 relative z-20 overflow-hidden transition-all duration-[1200ms] ease-out transform ${hookVisible ? 'opacity-100' : 'opacity-0'}`}>
                     {/* 배경 효과 */}
                     <div className="absolute top-[-10%] right-[-10%] w-[300px] h-[300px] bg-teal-600/10 blur-[100px] rounded-full"></div>
                     <div className="absolute bottom-0 left-0 w-full h-[150px] bg-gradient-to-t from-gray-900 via-transparent to-transparent z-0"></div>
@@ -325,7 +330,7 @@ export default function OrthopedicPage() {
 
 
                 {/* ===== 섹션 2-B: 관절내시경 · 연골재생치료 소개 ===== */}
-                <section className="w-full bg-white pt-24 pb-10 px-5 flex flex-col items-center justify-center text-center relative z-10 overflow-hidden">
+                <section data-track-section="intro" className="w-full bg-white pt-24 pb-10 px-5 flex flex-col items-center justify-center text-center relative z-10 overflow-hidden">
                     {/* 캐치프레이즈 */}
                     <div ref={arthroRef} className={`font-pretendard font-extrabold text-[#0d5e4f] flex flex-col items-center gap-1 transition-opacity duration-1000 ease-in relative z-20 ${arthroVisible ? 'opacity-100' : 'opacity-0'}`}>
                         <p className="text-[18px] tracking-[0.5em] mb-1 opacity-60">· · · · ·</p>
@@ -510,7 +515,7 @@ export default function OrthopedicPage() {
                 </section>
 
                 {/* ===== 섹션 2: 문제 제기 (MRI의 한계) ===== */}
-                <section ref={problemRef} className="w-full bg-[#1b2330] pt-16 pb-16 px-5 flex flex-col items-center justify-center relative z-10 overflow-hidden text-white">
+                <section data-track-section="problem" ref={problemRef} className="w-full bg-[#1b2330] pt-16 pb-16 px-5 flex flex-col items-center justify-center relative z-10 overflow-hidden text-white">
                     <div className={`text-center transition-all duration-1000 ease-out transform ${problemVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                         <div className="inline-flex items-center justify-center bg-amber-500/15 border border-amber-500/25 px-4 py-1.5 rounded-full mb-5">
                             <span className="text-amber-400 font-bold text-[14px] tracking-tight">분명 계속 아픈데... MRI 결과는 &apos;정상&apos;이라고요?</span>
@@ -761,7 +766,7 @@ export default function OrthopedicPage() {
                 </section>
 
                 {/* ===== 섹션 2-C: 연골재생치료 과정 ===== */}
-                <section ref={cartiRef} className="w-full bg-[#f8f9fa] pt-16 pb-16 px-5 relative z-10">
+                <section data-track-section="cartilage" ref={cartiRef} className="w-full bg-[#f8f9fa] pt-16 pb-16 px-5 relative z-10">
                     <div className={`text-center mb-10 transition-all duration-1000 ease-out transform ${cartiVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                         <p className="text-teal-600 font-bold text-[14px] tracking-widest uppercase mb-3">Cartilage Regeneration</p>
                         <h2 className="text-[26px] md:text-[30px] font-extrabold leading-[1.35] tracking-[-0.02em] text-black">
@@ -871,7 +876,7 @@ export default function OrthopedicPage() {
                 </section>
 
                 {/* ===== 섹션 3: 핵심 솔루션 (원데이 관절내시경) ===== */}
-                <section ref={solutionRef} className="w-full bg-white pt-16 pb-16 px-5 flex flex-col items-center justify-center text-center relative z-10 overflow-hidden">
+                <section data-track-section="solution" ref={solutionRef} className="w-full bg-white pt-16 pb-16 px-5 flex flex-col items-center justify-center text-center relative z-10 overflow-hidden">
                     <div className={`font-pretendard mb-10 transition-all duration-1000 ease-out transform ${solutionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                         <p className="text-teal-600 font-bold text-[14px] tracking-widest uppercase mb-3">Core Solution</p>
                         <h2 className="text-[28px] md:text-[32px] font-extrabold leading-[1.35] tracking-[-0.02em] text-black mb-3">
@@ -1032,7 +1037,7 @@ export default function OrthopedicPage() {
                 )}
 
                 {/* ===== 섹션 4: 최호 원장님 소개 ===== */}
-                <section ref={doctorRef} className="w-full bg-[#0f172a] pt-48 md:pt-72 pb-16 md:pb-24 px-6 relative z-10 overflow-hidden">
+                <section data-track-section="doctor" ref={doctorRef} className="w-full bg-[#0f172a] pt-48 md:pt-72 pb-16 md:pb-24 px-6 relative z-10 overflow-hidden">
                     {/* 상단 그라데이션 전환 */}
                     <div className="absolute top-0 left-0 right-0 h-40 md:h-64 bg-gradient-to-b from-white to-[#0f172a] z-0 pointer-events-none opacity-100"></div>
                     <div className={`max-w-[1000px] mx-auto flex flex-col md:flex-row items-center gap-10 md:gap-16 transition-all duration-1000 ease-out transform ${doctorVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
@@ -1095,7 +1100,7 @@ export default function OrthopedicPage() {
                 </section>
 
                 {/* ===== 섹션 5: 대상 환자 (이런 분들께 추천) ===== */}
-                <section ref={targetRef} className="w-full bg-[#f8f9fa] pt-16 pb-16 px-5 relative z-10">
+                <section data-track-section="target" ref={targetRef} className="w-full bg-[#f8f9fa] pt-16 pb-16 px-5 relative z-10">
                     <div className={`flex flex-col gap-4 text-center font-pretendard mb-10 transition-all duration-1000 ease-out transform ${targetVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
                         <h2 className="text-[28px] md:text-[32px] font-bold leading-[1.35] tracking-[-0.02em] text-black">
                             이런 분들께<br /><span className="text-teal-600">관절내시경</span>을 추천합니다
@@ -1131,7 +1136,7 @@ export default function OrthopedicPage() {
                 </section>
 
                 {/* ===== 섹션 6: 시술 과정 (Process) ===== */}
-                <section ref={processRef} className="w-full bg-white pt-16 pb-16 px-5 relative z-10">
+                <section data-track-section="process" ref={processRef} className="w-full bg-white pt-16 pb-16 px-5 relative z-10">
                     <div className={`text-center font-pretendard mb-12 transition-all duration-1000 ease-out transform ${processVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
                         <p className="text-teal-600 font-bold text-[14px] tracking-widest uppercase mb-3">Process</p>
                         <h2 className="text-[28px] md:text-[32px] font-bold leading-[1.35] tracking-[-0.02em] text-black">
@@ -1197,7 +1202,7 @@ export default function OrthopedicPage() {
                 </section>
 
                 {/* ===== 유튜브 영상 섹션 ===== */}
-                <section className="w-full bg-[#f8f9fa] pt-12 pb-16 px-5 relative z-10">
+                <section data-track-section="video" className="w-full bg-[#f8f9fa] pt-12 pb-16 px-5 relative z-10">
                     <div className="flex flex-col gap-6 text-center font-sans">
                         <h2 className="text-[28px] md:text-[32px] font-bold leading-[1.35] tracking-[-0.02em] text-black">
                             무릎 관절내시경<br />시술 영상
@@ -1240,7 +1245,7 @@ export default function OrthopedicPage() {
                 </section>
 
                 {/* ===== 오시는 길 섹션 ===== */}
-                <section className="w-full bg-white pt-16 pb-16 px-5 relative z-10 flex flex-col items-center justify-center font-pretendard">
+                <section data-track-section="location" className="w-full bg-white pt-16 pb-16 px-5 relative z-10 flex flex-col items-center justify-center font-pretendard">
                     <div className="flex flex-col gap-3 text-center mb-10 w-full">
                         <h2 className="text-[28px] md:text-[32px] font-bold leading-[1.35] tracking-[-0.02em] text-black">
                             오시는 길
@@ -1272,7 +1277,7 @@ export default function OrthopedicPage() {
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="text-[14px] font-bold text-teal-600 mb-1">대표번호</span>
-                                        <Link href="tel:051-935-1004" className="text-[22px] font-extrabold text-gray-900 hover:text-teal-600 transition-colors">
+                                        <Link data-track-click="phone" href="tel:051-935-1004" className="text-[22px] font-extrabold text-gray-900 hover:text-teal-600 transition-colors">
                                             051-935-1004
                                         </Link>
                                     </div>
@@ -1299,7 +1304,7 @@ export default function OrthopedicPage() {
                 </section>
 
                 {/* ===== 섹션 7: 마무리 CTA ===== */}
-                <section ref={outroRef} className="w-full bg-[#fcfdfe] pt-20 pb-28 px-6 relative z-10 flex flex-col items-center justify-center text-center font-pretendard border-t border-gray-100">
+                <section data-track-section="outro" ref={outroRef} className="w-full bg-[#fcfdfe] pt-20 pb-28 px-6 relative z-10 flex flex-col items-center justify-center text-center font-pretendard border-t border-gray-100">
                     <div className={`max-w-[600px] w-full transition-all duration-1000 ease-out transform ${outroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                         <div className="inline-flex items-center justify-center bg-teal-50 text-teal-600 px-4 py-1.5 rounded-full mb-8 shadow-sm">
                             <span className="text-[14px] md:text-[16px] font-bold tracking-tight">
@@ -1356,6 +1361,7 @@ export default function OrthopedicPage() {
 
                         {/* 척추 페이지 바로가기 */}
                         <Link
+                            data-track-click="spine_banner"
                             href="/"
                             className="inline-flex items-center gap-2 mt-10 bg-[#3b609c]/10 text-[#3b609c] px-6 py-3 rounded-full font-bold text-[15px] hover:bg-[#3b609c]/20 transition-colors border border-[#3b609c]/20"
                         >
@@ -1378,7 +1384,8 @@ export default function OrthopedicPage() {
                 {/* ===== 하단 고정 버튼 ===== */}
                 <div className={`fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[640px] bg-white border-t border-gray-200 py-4 px-6 z-40 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] transition-transform duration-500 ease-in-out ${showBottomNav ? 'translate-y-0' : 'translate-y-full'}`}>
                     <button
-                        onClick={() => { if (!isPopupOpen) setIsPopupOpen(true); }}
+                        data-track-click="consult_bottom"
+                        onClick={() => { if (!isPopupOpen) { setIsPopupOpen(true); track('step', 'open'); } }}
                         className="w-full mx-auto block bg-gradient-to-r from-teal-600 to-teal-500 text-white font-bold text-xl py-5 rounded-2xl hover:from-teal-700 hover:to-teal-600 transition-all duration-300 shadow-[0_8px_20px_-4px_rgba(13,148,136,0.4)] hover:shadow-[0_12px_25px_-4px_rgba(13,148,136,0.5)] active:scale-[0.98] animate-pulse-gentle shine-effect"
                     >
                         <div className="flex items-center justify-center gap-2">

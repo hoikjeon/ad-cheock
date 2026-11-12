@@ -50,7 +50,7 @@ function WarningIcon({ className }: { className?: string }) {
 
 export default function SpineWarningSection() {
     return (
-        <Reveal as="section" id="spine-warning-guide" aria-labelledby="spine-warning-title" className={styles.section} rootMargin="0px 0px -15% 0px">
+        <Reveal as="section" data-track-section="warning" id="spine-warning-guide" aria-labelledby="spine-warning-title" className={styles.section} rootMargin="0px 0px -15% 0px">
             <header className={styles.header}>
                 <span className={styles.badge}><WarningIcon /> 놓치지 말아야 할 위험 신호</span>
                 <h2 id="spine-warning-title" className={styles.title}>

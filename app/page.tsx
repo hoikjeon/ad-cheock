@@ -7,6 +7,8 @@ import { createClient } from '@supabase/supabase-js';
 import { POLICY_TEXTS, POLICY_TITLES, type PolicyType } from './lib/privacyPolicy';
 import ConsultationSuccessModal from './components/ConsultationSuccessModal';
 import SpineWarningSection from './components/SpineWarningSection';
+import VisitTracker from './components/VisitTracker';
+import { track } from './lib/track';
 
 // Supabase 클라이언트 설정 (환경 변수 사용)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -413,6 +415,7 @@ export default function MobileMain() {
 
         if (isSubmitting) return;
         setIsSubmitting(true);
+        track('step', 'submit');
 
         // 1. Supabase(DB) 저장
         const { error: dbError } = await supabase
@@ -446,19 +449,21 @@ export default function MobileMain() {
             setAgreedSensitive(false);
             setIsPopupOpen(false);
             setIsSuccessOpen(true);
+            track('step', 'complete');
         }
         setIsSubmitting(false);
     };
 
     return (
         <div className="relative min-h-screen bg-gray-900 font-sans flex justify-center">
+            <VisitTracker page="spine" />
             {/* \ud398\uc774\uc9c0 \ub85c\ub529 \ud504\ub85c\uadf8\ub808\uc2a4 \ubc14 */}
             <div className={`fixed top-0 left-0 h-[3px] bg-gradient-to-r from-blue-500 via-blue-400 to-cyan-400 z-[100] transition-all duration-1000 ease-out ${pageLoaded ? 'w-full opacity-0' : 'w-[70%] opacity-100'}`}></div>
 
             <div className="w-full max-w-[640px] bg-white relative pb-32 shadow-2xl overflow-x-hidden min-h-screen">
 
                 {/* --- [최상단] 히어로 훅(Hook) 섹션 --- */}
-                <section ref={hookRef} className={`w-full bg-[#0f172a] pt-14 pb-20 px-6 relative z-20 overflow-hidden transition-all duration-[1200ms] ease-out transform ${hookVisible ? 'opacity-100' : 'opacity-0'}`}>
+                <section data-track-section="hook" ref={hookRef} className={`w-full bg-[#0f172a] pt-14 pb-20 px-6 relative z-20 overflow-hidden transition-all duration-[1200ms] ease-out transform ${hookVisible ? 'opacity-100' : 'opacity-0'}`}>
                     {/* 배경 효과 (더 은은하고 고급스럽게) */}
                     <div className="absolute top-[-10%] right-[-10%] w-[300px] h-[300px] bg-blue-600/10 blur-[100px] rounded-full"></div>
                     <div className="absolute bottom-0 left-0 w-full h-[150px] bg-gradient-to-t from-gray-900 via-transparent to-transparent z-0"></div>
@@ -565,11 +570,11 @@ export default function MobileMain() {
                         </div>
 
                         <div className="flex flex-col gap-3 relative z-20 pointer-events-auto">
-                            <Link href="https://m.booking.naver.com/booking/13/bizes/666179?theme=place&entry=pll&lang=ko&area=pll" target="_blank" className="w-full bg-[#00c73c] hover:bg-[#00ab33] text-white text-center py-4 rounded-2xl font-bold text-[18px] shadow-lg transition-colors flex items-center justify-center gap-2 cursor-pointer relative z-30">
+                            <Link data-track-click="naver_booking" href="https://m.booking.naver.com/booking/13/bizes/666179?theme=place&entry=pll&lang=ko&area=pll" target="_blank" className="w-full bg-[#00c73c] hover:bg-[#00ab33] text-white text-center py-4 rounded-2xl font-bold text-[18px] shadow-lg transition-colors flex items-center justify-center gap-2 cursor-pointer relative z-30">
                                 <span className="font-extrabold text-[20px]">N</span>
                                 네이버 예약
                             </Link>
-                            <Link href="https://www.ys-cheok.com/doctors" target="_blank" className="w-full bg-[#EAEAEA] hover:bg-gray-200 text-[#0d6efd] text-center py-4 rounded-2xl font-bold text-[18px] shadow-lg transition-colors cursor-pointer relative z-30">
+                            <Link data-track-click="doctors" href="https://www.ys-cheok.com/doctors" target="_blank" className="w-full bg-[#EAEAEA] hover:bg-gray-200 text-[#0d6efd] text-center py-4 rounded-2xl font-bold text-[18px] shadow-lg transition-colors cursor-pointer relative z-30">
                                 의료진 바로보기
                             </Link>
                         </div>
@@ -694,7 +699,7 @@ export default function MobileMain() {
                 <SpineWarningSection />
 
                 {/* --- 최소침습 양방향 척추내시경 섹션 --- */}
-                <section className="w-full bg-white pt-16 pb-10 px-5 flex flex-col items-center justify-center text-center relative z-10 overflow-hidden">
+                <section data-track-section="ube" className="w-full bg-white pt-16 pb-10 px-5 flex flex-col items-center justify-center text-center relative z-10 overflow-hidden">
                     <div ref={catchphraseRef} className={`font-pretendard font-extrabold text-[#294f7e] flex flex-col items-center gap-1 transition-opacity duration-1000 ease-in relative z-20 ${catchphraseVisible ? 'opacity-100' : 'opacity-0'}`}>
                         <p className="text-[25px] tracking-tight">
                             <span style={{ WebkitTextEmphasis: 'filled dot #294f7e', textEmphasis: 'filled dot #294f7e', textEmphasisPosition: 'over right', WebkitTextEmphasisPosition: 'over right' }}>최소침습</span>으로 안전하게
@@ -865,7 +870,7 @@ export default function MobileMain() {
                 </section>
 
                 {/* --- 새 섹션: 의사를 가르치는 병원 (신규 추가) --- */}
-                <section ref={eduRef} className="w-full bg-[#fcfdfe] py-16 px-5 relative z-10 border-t border-gray-100 overflow-hidden">
+                <section data-track-section="edu" ref={eduRef} className="w-full bg-[#fcfdfe] py-16 px-5 relative z-10 border-t border-gray-100 overflow-hidden">
                     <div className={`max-w-[800px] mx-auto transition-all duration-1000 ease-out transform ${eduVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
                         {/* 타이틀 영역 (스크롤 연동 애니메이션 - 모바일 최적화 3줄 구성) */}
                         <div className="text-center mb-12">
@@ -1028,10 +1033,11 @@ export default function MobileMain() {
                 )}
 
                 {/* --- 연세척TV 유튜브 섹션 --- */}
-                <section className="w-full bg-[#f8f9fa] pt-12 pb-16 px-5 relative z-10">
+                <section data-track-section="youtube" className="w-full bg-[#f8f9fa] pt-12 pb-16 px-5 relative z-10">
                     <div className="flex flex-col items-center text-center font-sans">
                         {/* 버튼 태그 */}
                         <Link
+                            data-track-click="youtube_channel"
                             href="https://www.youtube.com/@%EC%97%B0%EC%84%B8%EC%B2%99TV"
                             target="_blank"
                             className="inline-flex items-center gap-1.5 bg-white text-[#3b609c] font-bold text-[14px] px-5 py-2 rounded-full border border-[#d0daf0] mb-5 hover:bg-[#e0eaff] transition-colors shadow-sm"
@@ -1132,7 +1138,7 @@ export default function MobileMain() {
                 </section>
 
                 {/* --- 세 번째 섹션: 연세척병원이 특별한 이유 --- */}
-                <section ref={reasonsRef} className="w-full bg-[#f8f9fa] py-16 px-5 relative z-10">
+                <section data-track-section="reasons" ref={reasonsRef} className="w-full bg-[#f8f9fa] py-16 px-5 relative z-10">
                     <div className={`flex flex-col gap-4 text-center font-pretendard mb-10 transition-all duration-1000 ease-out transform ${reasonsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
                         <div className="flex justify-center mb-1">
                             <Image src="/images/logo.png" alt="연세척병원 로고" width={200} height={56} className="h-14 object-contain w-auto opacity-80" />
@@ -1315,7 +1321,7 @@ export default function MobileMain() {
                 </section>
 
                 {/* --- 새 섹션: 이남 병원장 약력 --- */}
-                <section ref={leeCareerRef} className="w-full bg-[#0f172a] pt-48 md:pt-72 pb-16 md:pb-24 px-6 relative z-10 overflow-hidden">
+                <section data-track-section="lee" ref={leeCareerRef} className="w-full bg-[#0f172a] pt-48 md:pt-72 pb-16 md:pb-24 px-6 relative z-10 overflow-hidden">
                     {/* 상단 그라데이션 전환 */}
                     <div className="absolute top-0 left-0 right-0 h-40 md:h-64 bg-gradient-to-b from-white to-[#0f172a] z-0 pointer-events-none opacity-100"></div>
                     <div className={`max-w-[1000px] mx-auto flex flex-col md:flex-row items-center gap-10 md:gap-16 transition-all duration-1000 ease-out transform ${leeCareerVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
@@ -1372,7 +1378,7 @@ export default function MobileMain() {
                 </section>
 
                 {/* --- 새 섹션: 김동한 병원장 약력 --- */}
-                <section ref={kimCareerRef} className="w-full bg-[#0f172a] pt-4 pb-16 md:pb-24 px-6 relative z-20 overflow-hidden shadow-[0_20px_50px_rgba(15,23,42,0.4)]">
+                <section data-track-section="kim" ref={kimCareerRef} className="w-full bg-[#0f172a] pt-4 pb-16 md:pb-24 px-6 relative z-20 overflow-hidden shadow-[0_20px_50px_rgba(15,23,42,0.4)]">
                     <div className={`max-w-[1000px] mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-16 transition-all duration-1000 ease-out transform ${kimCareerVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
                         {/* 이미지 영역 */}
                         <div className="w-full md:w-1/2 flex justify-center">
@@ -1427,7 +1433,7 @@ export default function MobileMain() {
                 </section>
 
                 {/* --- 핵심 Q&A 섹션 --- */}
-                <section ref={qaRef} className="w-full bg-white pt-16 pb-16 px-5 relative z-10 flex flex-col items-center justify-center font-pretendard">
+                <section data-track-section="qa" ref={qaRef} className="w-full bg-white pt-16 pb-16 px-5 relative z-10 flex flex-col items-center justify-center font-pretendard">
                     <div className={`flex flex-col gap-3 text-center mb-10 transition-all duration-1000 ease-out transform ${qaVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                         <h2 className="text-[28px] md:text-[32px] font-bold leading-[1.35] tracking-[-0.02em] text-black">
                             양방향 척추내시경(UBE)<br />
@@ -1475,7 +1481,7 @@ export default function MobileMain() {
                 </section>
 
                 {/* --- 오시는 길 섹션 --- */}
-                <section className="w-full bg-[#f8f9fa] pt-16 pb-16 px-5 relative z-10 flex flex-col items-center justify-center font-pretendard">
+                <section data-track-section="location" className="w-full bg-[#f8f9fa] pt-16 pb-16 px-5 relative z-10 flex flex-col items-center justify-center font-pretendard">
                     <div className="flex flex-col gap-3 text-center mb-10 w-full">
                         <h2 className="text-[28px] md:text-[32px] font-bold leading-[1.35] tracking-[-0.02em] text-black">
                             오시는 길
@@ -1515,7 +1521,7 @@ export default function MobileMain() {
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="text-[14px] font-bold text-[#3b609c] mb-1">대표번호</span>
-                                        <Link href="tel:051-935-1004" className="text-[22px] font-extrabold text-gray-900 hover:text-[#3b609c] transition-colors">
+                                        <Link data-track-click="phone" href="tel:051-935-1004" className="text-[22px] font-extrabold text-gray-900 hover:text-[#3b609c] transition-colors">
                                             051-935-1004
                                         </Link>
                                     </div>
@@ -1571,7 +1577,7 @@ export default function MobileMain() {
                 </section>
 
                 {/* --- 네 번째 섹션: 결론 멘트 (최종 조율) --- */}
-                <section className="w-full bg-[#fcfdfe] pt-20 pb-28 px-6 relative z-10 flex flex-col items-center justify-center text-center font-pretendard border-t border-gray-100">
+                <section data-track-section="conclusion" className="w-full bg-[#fcfdfe] pt-20 pb-28 px-6 relative z-10 flex flex-col items-center justify-center text-center font-pretendard border-t border-gray-100">
                     <div className="max-w-[600px] w-full">
                         {/* 상단 포인트 라벨 */}
                         <div className="inline-flex items-center justify-center bg-[#eef2ff] text-[#3b609c] px-4 py-1.5 rounded-full mb-8 shadow-sm">
@@ -1680,6 +1686,7 @@ export default function MobileMain() {
                             정형외과 최호 원장의 원데이 관절내시경
                         </p>
                         <Link
+                            data-track-click="ortho_banner"
                             href="/orthopedic"
                             className="mt-2 bg-white text-[#0d9488] font-bold text-[17px] px-8 py-4 rounded-2xl shadow-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
                         >
@@ -1701,7 +1708,8 @@ export default function MobileMain() {
                 {/* --- 하단 고정 버튼 (스크롤 시 활성화되어 상담 팝업창을 엽니다) --- */}
                 <div className={`fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[640px] bg-white border-t border-gray-200 py-4 px-6 z-40 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] transition-transform duration-500 ease-in-out ${showBottomNav ? 'translate-y-0' : 'translate-y-full'}`}>
                     <button
-                        onClick={() => { if (!isPopupOpen) setIsPopupOpen(true); }}
+                        data-track-click="consult_bottom"
+                        onClick={() => { if (!isPopupOpen) { setIsPopupOpen(true); track('step', 'open'); } }}
                         className="w-full mx-auto block bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold text-xl py-5 rounded-2xl hover:from-blue-700 hover:to-blue-600 transition-all duration-300 shadow-[0_8px_20px_-4px_rgba(37,99,235,0.4)] hover:shadow-[0_12px_25px_-4px_rgba(37,99,235,0.5)] active:scale-[0.98] animate-pulse-gentle shine-effect"
                     >
                         <div className="flex items-center justify-center gap-2">
